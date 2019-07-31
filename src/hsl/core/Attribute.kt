@@ -1,11 +1,12 @@
 package hsl.core
 
 class Attribute(private var baseValue: Float, var type: AttributeType) {
-    private var _value by IdFloatBinding(baseValue, "Attr${type.name}")
+    private var _value by IdFloatBinding(baseValue, "attr${type.name}")
     val value: Float
         get() {
             if(_isDirty) {
                 _value = calculateValue()
+                _isDirty = false
             }
 
             return _value
@@ -27,13 +28,18 @@ class Attribute(private var baseValue: Float, var type: AttributeType) {
         return calcValue
     }
 
-    fun ApplyAttributeEffect(effect: AttributeEffect) {
+    fun recalculateValue() {
+        _value = calculateValue()
+        _isDirty = false
+    }
+
+    fun applyAttributeEffect(effect: AttributeEffect) {
         _attributeEffects.add(effect)
         _isDirty = true
 
     }
 
-    fun RemoveAttributeEffectsBySource(source: AttributeEffectSource) {
+    fun removeAttributeEffectsBySource(source: AttributeEffectSource) {
         _attributeEffects = _attributeEffects
                 .filter { it.source != source }
                 .toMutableList()
@@ -51,6 +57,7 @@ enum class AttributeEffectType {
 
 interface AttributeEffectSource
 
-enum class AttributeType(name: String) {
-    PWR("PWR")
+enum class AttributeType(val displayName: String) {
+    DMG("Damage"),
+    APS("Aps")
 }

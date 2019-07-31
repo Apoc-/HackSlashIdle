@@ -1,7 +1,11 @@
 html {
-    font-size: 18px;
+    font-size: 16px;
 }
 
 .jumbotron {
     padding: 1em;
+}
+
+.progress {
+    background-color: #2B3E50
 }

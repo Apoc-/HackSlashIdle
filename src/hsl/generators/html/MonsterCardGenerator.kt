@@ -1,18 +1,48 @@
 package hsl.generators.html
 
 import hsl.core.Monster
+import kotlinx.html.*
+import kotlinx.html.dom.create
+import kotlinx.html.js.div
+import org.w3c.dom.HTMLDivElement
+import kotlin.browser.document
 
 object MonsterCardGenerator {
-    fun generateMonsterCard(monster: Monster) {
+    fun generateMonsterCard(monster: Monster): HTMLDivElement {
+        val card = document.create.div(classes = "card mx-auto") {
+            style = "max-width: 20em"
 
+            img (classes = "card-img-top img-fluid"){
+                src = "gfx/monster.svg"
+                alt = "Monster"
+            }
+
+            div(classes = "card-body") {
+                h5(classes = "card-title") {
+                    + "${monster.name} (Level ${monster.level})"
+                }
+
+                p (classes = "card-text") {
+                    div(classes = "progress") {
+                        div(classes = "progress-bar bg-danger") {
+                            id = "monsterHealthBar"
+                            role = "progressbar"
+                            style = "width: 100%"
+
+                            + "Health"
+                        }
+                    }
+                }
+
+                button (classes = "btn btn-danger") {
+                    type = ButtonType.button
+                    id = "monsterAttackButton"
+
+                    + "Attack"
+                }
+            }
+        }
+
+        return card
     }
-
-    val template: String = "<div class=\"card\" style=\"width: 18rem;\">\n" +
-            "                                <img src=\"gfx/monster.svg\" class=\"card-img-top\" alt=\"Monster\">\n" +
-            "                                <div class=\"card-body\">\n" +
-            "                                    <h5 class=\"card-title\">{name}</h5>\n" +
-            "                                    <p class=\"card-text\">Some quick example text to build on the card title and make up the bulk of the card's content.</p>\n" +
-            "                                    <button type=\"button\" class=\"btn btn-danger\" id=\"button\">Attack</button>\n" +
-            "                                </div>\n" +
-            "                            </div>"
 }

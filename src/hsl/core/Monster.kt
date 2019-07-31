@@ -1,14 +1,13 @@
 package hsl.core
 
 class Monster(var name: String, var level: Int) {
-    private var _health: Float = level * 10f
+    var maxHealth: Float = level * 10f
+    var currentHealth: Float by IdFloatBinding(level * 10f, "monsterHealth")
 
     fun dealDamage(dmg: Float): Boolean {
-        _health -= dmg
+        currentHealth -= dmg
 
-        println("Monster $name health left $_health")
-
-        if(_health <= 0) {
+        if(currentHealth <= 0) {
             return true
         }
 

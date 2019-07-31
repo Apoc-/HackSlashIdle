@@ -1,16 +1,15 @@
 package hsl.core
 
 class Hero : AttributeEffectSource {
-    var Level: Int by IdIntBinding(1, "HeroLevel")
-    var Gold: Int by IdIntBinding(0, "HeroGold")
-    var Xp: Int by IdIntBinding(0, "HeroXp")
+    var Level: Int by IdIntBinding(1, "heroLevel")
+    var Gold: Int by IdIntBinding(0, "heroGold")
+    var Xp: Int by IdIntBinding(0, "heroXp")
     var Attributes: MutableMap<AttributeType, Attribute> = mutableMapOf(
-            (AttributeType.PWR to Attribute(1f, AttributeType.PWR))
+            (AttributeType.DMG to Attribute(1f, AttributeType.DMG))
     )
 
     infix fun attack(monster: Monster): Boolean {
-        println("Attacking ${monster.name}")
-        var damage: Float = Attributes[AttributeType.PWR]?.value ?: 0f
+        var damage: Float = Attributes[AttributeType.DMG]?.value ?: 0f
 
         var died = monster.dealDamage(damage)
 
@@ -21,5 +20,24 @@ class Hero : AttributeEffectSource {
         }
 
         return died
+    }
+
+    fun addAttribute(baseValue: Float, type: AttributeType) {
+        var attr = Attribute(baseValue, type)
+        if(Attributes[type] != null) {
+            println("AttributeType $type already known.")
+            return
+        }
+
+        Attributes[type] = attr
+        Game.refreshAttributeTable()
+    }
+
+    fun recalculateAttributes() {
+        println("Recalculating Attributes")
+
+        Attributes.values.forEach {
+            it.recalculateValue()
+        }
     }
 }
