@@ -5,6 +5,7 @@ import hsl.generators.MonsterGenerator
 import hsl.generators.html.AttributeTableRowGenerator
 import hsl.generators.html.MonsterCardGenerator
 import hsl.generators.html.UpgradeButtonGenerator
+import hsl.util.Logger
 import kotlinx.html.currentTimeMillis
 import org.w3c.dom.HTMLButtonElement
 import org.w3c.dom.HTMLDivElement
@@ -15,12 +16,22 @@ import kotlin.dom.addClass
 import kotlin.dom.clear
 import kotlin.dom.hasClass
 import kotlin.dom.removeClass
+import kotlin.js.Date
 
 object Game {
     var Hero = Hero()
+    val Logger = Logger("logContainer")
     private lateinit var CurrentMonster: Monster
     private lateinit var CurrentMonsterCard: HTMLDivElement
-    private val fps = 60
+
+    private var lastAutoAttack = 0f
+
+    //timing
+    private val fps = 30.0
+    private val interval = 1000.0/fps
+    private var lastTime = Date().getMilliseconds()
+    private var currentTime = 0
+    private var deltaTime = 0
 
     const val DEBUG: Boolean = false
 
@@ -28,6 +39,31 @@ object Game {
         spawnMonster()
         refreshAttributeTable()
         initUpgradeButtons()
+    }
+
+
+    var fCount = 0
+    fun gameLoop() {
+        window.requestAnimationFrame {
+            gameLoop()
+        }
+
+        currentTime = Date().getMilliseconds()
+        deltaTime = currentTime - lastTime
+
+        if(deltaTime > interval) {
+            fCount += 1
+
+            updateUpgradeButtons()
+
+
+
+        }
+
+        //every 30 frames, update autoScrollContainers
+        if(fCount%30 == 0) scrollAutoScrollContainers()
+
+        handleAutoAttack()
     }
 
     fun refreshAttributeTable() {
@@ -59,12 +95,16 @@ object Game {
         }
     }
 
-    fun gameLoop() {
-        handleAutoAttack()
-        updateUpgradeButtons()
 
-        window.requestAnimationFrame {
-            gameLoop()
+    private fun scrollAutoScrollContainers() {
+        var scrollContainer = document.getElementsByClassName("auto-scroll")
+
+        scrollContainer.asList().forEach {
+            val isScrolled = it.scrollHeight - it.clientHeight > it.scrollTop + 50
+
+            if(!isScrolled) {
+                it.scrollTop = (it.scrollHeight - it.clientHeight).toDouble()
+            }
         }
     }
 
@@ -132,22 +172,18 @@ object Game {
         CurrentMonsterCard.parentNode?.clear()
     }
 
-
-    var last = 0f
-
-
     private fun handleAutoAttack() {
         val aps = Hero.Attributes[AttributeType.APS]?.value ?: 0f
 
         if(aps <= 0) return
 
         val now = currentTimeMillis() / 1000f
-        val delta = now - last
+        val delta = now - lastAutoAttack
 
         if(delta >= 1f/aps) {
             handleMonsterAttack()
 
-            last = now
+            lastAutoAttack = now
         }
     }
 }

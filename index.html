@@ -5,9 +5,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootswatch/4.3.1/superhero/bootstrap.min.css">
+    <!--<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootswatch/4.3.1/superhero/bootstrap.min.css">-->
 
-    <!--<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootswatch/4.3.1/darkly/bootstrap.min.css">-->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootswatch/4.3.1/darkly/bootstrap.min.css">
     <!--<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootswatch/4.3.1/cyborg/bootstrap.min.css">-->
     <!--<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">-->
@@ -23,7 +23,7 @@
     </div>
     <div class="row">
         <div class="col-md-2">
-            <div class="card">
+            <div class="card" style="height: 530px; max-height: 530px">
                 <div class="card-header">Hero Level <span id="heroLevel">1</span></div>
                 <div class="card-body">
                     <table class="table table-sm table-hover" id="resourceTable">
@@ -84,10 +84,12 @@
         </div>
 
         <div class="col-md-4">
-            <div class="card">
-                <div class="card-header"></div>
-                <div class="card-body">
+            <div class="card" style="height: 530px ;max-height: 530px">
+                <div class="card-header">Log</div>
+                <div class="card-body overflow-auto auto-scroll">
+                    <div id="logContainer">
 
+                    </div>
                 </div>
             </div>
         </div>

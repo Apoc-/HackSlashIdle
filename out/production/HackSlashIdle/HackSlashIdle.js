@@ -18,8 +18,8 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
   var throwUPAE = Kotlin.throwUPAE;
   var Exception_init = Kotlin.kotlin.Exception_init_pdl1vj$;
   var clear = Kotlin.kotlin.dom.clear_asww5s$;
-  var hasClass = Kotlin.kotlin.dom.hasClass_46n0ku$;
   var asList = Kotlin.org.w3c.dom.asList_kt9thq$;
+  var hasClass = Kotlin.kotlin.dom.hasClass_46n0ku$;
   var toInt = Kotlin.kotlin.text.toInt_pdl1vz$;
   var addClass = Kotlin.kotlin.dom.addClass_hhb33f$;
   var removeClass = Kotlin.kotlin.dom.removeClass_hhb33f$;
@@ -28,7 +28,6 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
   var Kind_OBJECT = Kotlin.Kind.OBJECT;
   var to = Kotlin.kotlin.to_ujzrz7$;
   var mutableMapOf = Kotlin.kotlin.collections.mutableMapOf_qfcya0$;
-  var ReadWriteProperty = Kotlin.kotlin.properties.ReadWriteProperty;
   var mapOf = Kotlin.kotlin.collections.mapOf_qfcya0$;
   var get_create = $module$kotlinx_html_js.kotlinx.html.dom.get_create_4wc2mh$;
   var td = $module$kotlinx_html_js.kotlinx.html.td_vlzo05$;
@@ -44,10 +43,18 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
   var button = $module$kotlinx_html_js.kotlinx.html.button_i4xb7r$;
   var div_0 = $module$kotlinx_html_js.kotlinx.html.js.div_wkomt5$;
   var button_0 = $module$kotlinx_html_js.kotlinx.html.js.button_yqfwmz$;
+  var ReadWriteProperty = Kotlin.kotlin.properties.ReadWriteProperty;
+  var Exception = Kotlin.kotlin.Exception;
+  var b = $module$kotlinx_html_js.kotlinx.html.b_r0mnq7$;
+  var div_1 = $module$kotlinx_html_js.kotlinx.html.div_59el9d$;
   AttributeEffectType.prototype = Object.create(Enum.prototype);
   AttributeEffectType.prototype.constructor = AttributeEffectType;
   AttributeType.prototype = Object.create(Enum.prototype);
   AttributeType.prototype.constructor = AttributeType;
+  IdNotFoundException.prototype = Object.create(Exception.prototype);
+  IdNotFoundException.prototype.constructor = IdNotFoundException;
+  MsgType.prototype = Object.create(Enum.prototype);
+  MsgType.prototype.constructor = MsgType;
   function main(args) {
     println('Starting gameLoop...');
     Game_getInstance().gameLoop();
@@ -247,14 +254,20 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
   function Game() {
     Game_instance = this;
     this.Hero = new Hero();
+    this.Logger = new Logger('logContainer');
     this.CurrentMonster_mrunk1$_0 = this.CurrentMonster_mrunk1$_0;
     this.CurrentMonsterCard_kno87j$_0 = this.CurrentMonsterCard_kno87j$_0;
-    this.fps_0 = 60;
+    this.lastAutoAttack_0 = 0.0;
+    this.fps_0 = 30.0;
+    this.interval_0 = 1000.0 / this.fps_0;
+    this.lastTime_0 = (new Date()).getMilliseconds();
+    this.currentTime_0 = 0;
+    this.deltaTime_0 = 0;
     this.DEBUG = false;
     this.spawnMonster_0();
     this.refreshAttributeTable();
     this.initUpgradeButtons_0();
-    this.last = 0.0;
+    this.fCount = 0;
   }
   Object.defineProperty(Game.prototype, 'CurrentMonster_0', {
     get: function () {
@@ -276,6 +289,24 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
       this.CurrentMonsterCard_kno87j$_0 = CurrentMonsterCard;
     }
   });
+  function Game$gameLoop$lambda(this$Game) {
+    return function (it) {
+      this$Game.gameLoop();
+      return Unit;
+    };
+  }
+  Game.prototype.gameLoop = function () {
+    window.requestAnimationFrame(Game$gameLoop$lambda(this));
+    this.currentTime_0 = (new Date()).getMilliseconds();
+    this.deltaTime_0 = this.currentTime_0 - this.lastTime_0 | 0;
+    if (this.deltaTime_0 > this.interval_0) {
+      this.fCount = this.fCount + 1 | 0;
+      this.updateUpgradeButtons_0();
+    }
+    if (this.fCount % 30 === 0)
+      this.scollScrollContainers_0();
+    this.handleAutoAttack_0();
+  };
   Game.prototype.refreshAttributeTable = function () {
     var tmp$;
     tmp$ = document.getElementById('attributeTableBody');
@@ -317,16 +348,23 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
       button.addEventListener('click', Game$initUpgradeButtons$lambda(upgrade, this, id));
     }
   };
-  function Game$gameLoop$lambda(this$Game) {
-    return function (it) {
-      this$Game.gameLoop();
-      return Unit;
-    };
-  }
-  Game.prototype.gameLoop = function () {
-    this.handleAutoAttack_0();
-    this.updateUpgradeButtons_0();
-    window.requestAnimationFrame(Game$gameLoop$lambda(this));
+  Game.prototype.scollScrollContainers_0 = function () {
+    var scrollContainer = document.getElementsByClassName('auto-scroll');
+    var tmp$;
+    tmp$ = asList(scrollContainer).iterator();
+    while (tmp$.hasNext()) {
+      var element = tmp$.next();
+      var isScrolled = (element.scrollHeight - element.clientHeight | 0) > element.scrollTop + 50;
+      println('---');
+      println(element.scrollHeight);
+      println(element.clientHeight);
+      println(element.scrollTop);
+      println('---');
+      if (!isScrolled) {
+        println('scrln');
+        element.scrollTop = element.scrollHeight - element.clientHeight | 0;
+      }
+    }
   };
   Game.prototype.updateUpgradeButtons_0 = function () {
     var tmp$, tmp$_0;
@@ -415,10 +453,10 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
     if (aps <= 0)
       return;
     var now = currentTimeMillis().toNumber() / 1000.0;
-    var delta = now - this.last;
+    var delta = now - this.lastAutoAttack_0;
     if (delta >= 1.0 / aps) {
       this.handleMonsterAttack_0();
-      this.last = now;
+      this.lastAutoAttack_0 = now;
     }
   };
   Game.$metadata$ = {
@@ -471,7 +509,7 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
     var damage = (tmp$_0 = (tmp$ = this.Attributes.get_11rb$(AttributeType$DMG_getInstance())) != null ? tmp$.value : null) != null ? tmp$_0 : 0.0;
     var died = monster.dealDamage_mx4ult$(damage);
     if (died) {
-      println('Monster ' + monster.name + ' died');
+      Game_getInstance().Logger.logMsg_uzephu$(MsgType$COMBAT_getInstance(), 'There has been a tragic and unforeseeable death: ' + monster);
       this.Gold = this.Gold + monster.getGold() | 0;
       this.Xp = this.Xp + monster.getXp() | 0;
     }
@@ -499,51 +537,6 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
     kind: Kind_CLASS,
     simpleName: 'Hero',
     interfaces: [AttributeEffectSource]
-  };
-  function IdFloatBinding(initialValue, id) {
-    this.id = id;
-    this.value_0 = initialValue;
-    var element = document.getElementById(this.id);
-    if (element == null) {
-      if (Game_getInstance().DEBUG)
-        println('Element with id: ' + this.id + ' not found.');
-    }
-     else {
-      element.innerHTML = this.value_0.toString();
-    }
-  }
-  IdFloatBinding.prototype.getValue_lrcp0p$ = function (thisRef, property) {
-    return this.value_0;
-  };
-  IdFloatBinding.prototype.setValue_9rddgb$ = function (thisRef, property, value) {
-    var tmp$;
-    println('refreshing ' + this.id);
-    this.value_0 = value;
-    (tmp$ = document.getElementById(this.id)) != null ? (tmp$.innerHTML = value.toString()) : null;
-  };
-  IdFloatBinding.$metadata$ = {
-    kind: Kind_CLASS,
-    simpleName: 'IdFloatBinding',
-    interfaces: [ReadWriteProperty]
-  };
-  function IdIntBinding(initialValue, id) {
-    this.id = id;
-    this.value_0 = initialValue;
-    var tmp$;
-    (tmp$ = document.getElementById(this.id)) != null ? (tmp$.innerHTML = this.value_0.toString()) : null;
-  }
-  IdIntBinding.prototype.getValue_lrcp0p$ = function (thisRef, property) {
-    return this.value_0;
-  };
-  IdIntBinding.prototype.setValue_9rddgb$ = function (thisRef, property, value) {
-    var tmp$;
-    this.value_0 = value;
-    (tmp$ = document.getElementById(this.id)) != null ? (tmp$.innerHTML = value.toString()) : null;
-  };
-  IdIntBinding.$metadata$ = {
-    kind: Kind_CLASS,
-    simpleName: 'IdIntBinding',
-    interfaces: [ReadWriteProperty]
   };
   function Mentor() {
     Mentor_instance = this;
@@ -702,6 +695,9 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
   };
   Monster.prototype.getXp = function () {
     return this.level;
+  };
+  Monster.prototype.toString = function () {
+    return this.name + ' (Level ' + this.level + ')';
   };
   Monster.$metadata$ = {
     kind: Kind_CLASS,
@@ -862,6 +858,138 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
     }
     return MonsterGenerator_instance;
   }
+  function IdFloatBinding(initialValue, id) {
+    this.id = id;
+    this.value_0 = initialValue;
+    var element = document.getElementById(this.id);
+    if (element == null) {
+      if (Game_getInstance().DEBUG)
+        println('Element with id: ' + this.id + ' not found.');
+    }
+     else {
+      element.innerHTML = this.value_0.toString();
+    }
+  }
+  IdFloatBinding.prototype.getValue_lrcp0p$ = function (thisRef, property) {
+    return this.value_0;
+  };
+  IdFloatBinding.prototype.setValue_9rddgb$ = function (thisRef, property, value) {
+    var tmp$;
+    println('refreshing ' + this.id);
+    this.value_0 = value;
+    (tmp$ = document.getElementById(this.id)) != null ? (tmp$.innerHTML = value.toString()) : null;
+  };
+  IdFloatBinding.$metadata$ = {
+    kind: Kind_CLASS,
+    simpleName: 'IdFloatBinding',
+    interfaces: [ReadWriteProperty]
+  };
+  function IdIntBinding(initialValue, id) {
+    this.id = id;
+    this.value_0 = initialValue;
+    var tmp$;
+    (tmp$ = document.getElementById(this.id)) != null ? (tmp$.innerHTML = this.value_0.toString()) : null;
+  }
+  IdIntBinding.prototype.getValue_lrcp0p$ = function (thisRef, property) {
+    return this.value_0;
+  };
+  IdIntBinding.prototype.setValue_9rddgb$ = function (thisRef, property, value) {
+    var tmp$;
+    this.value_0 = value;
+    (tmp$ = document.getElementById(this.id)) != null ? (tmp$.innerHTML = value.toString()) : null;
+  };
+  IdIntBinding.$metadata$ = {
+    kind: Kind_CLASS,
+    simpleName: 'IdIntBinding',
+    interfaces: [ReadWriteProperty]
+  };
+  function IdNotFoundException(id) {
+    Exception_init('IdNotFoundException: ' + id + ' not found in document.', this);
+    this.name = 'IdNotFoundException';
+  }
+  IdNotFoundException.$metadata$ = {
+    kind: Kind_CLASS,
+    simpleName: 'IdNotFoundException',
+    interfaces: [Exception]
+  };
+  function Logger(logContainerId) {
+    this.logContainerId_0 = logContainerId;
+    var tmp$;
+    tmp$ = document.getElementById(this.logContainerId_0);
+    if (tmp$ == null) {
+      throw new IdNotFoundException(this.logContainerId_0);
+    }
+    this.container_0 = tmp$;
+  }
+  function Logger$logMsg$lambda$lambda$lambda(closure$msgType) {
+    return function ($receiver) {
+      $receiver.unaryPlus_pdl1vz$(closure$msgType.logString);
+      return Unit;
+    };
+  }
+  function Logger$logMsg$lambda$lambda(closure$msgType) {
+    return function ($receiver) {
+      b($receiver, void 0, Logger$logMsg$lambda$lambda$lambda(closure$msgType));
+      return Unit;
+    };
+  }
+  function Logger$logMsg$lambda$lambda_0(closure$msg) {
+    return function ($receiver) {
+      $receiver.unaryPlus_pdl1vz$(closure$msg);
+      return Unit;
+    };
+  }
+  function Logger$logMsg$lambda(closure$msgType, closure$msg) {
+    return function ($receiver) {
+      div($receiver, 'col-sm-3', Logger$logMsg$lambda$lambda(closure$msgType));
+      div($receiver, 'col-sm', Logger$logMsg$lambda$lambda_0(closure$msg));
+      return Unit;
+    };
+  }
+  Logger.prototype.logMsg_uzephu$ = function (msgType, msg) {
+    var date = (new Date()).toDateString();
+    var entry = div_1(get_create(document), 'row ' + msgType.textColorClass, Logger$logMsg$lambda(msgType, msg));
+    this.container_0.append(entry);
+  };
+  Logger.$metadata$ = {
+    kind: Kind_CLASS,
+    simpleName: 'Logger',
+    interfaces: []
+  };
+  function MsgType(name, ordinal, logString, textColorClass) {
+    Enum.call(this);
+    this.logString = logString;
+    this.textColorClass = textColorClass;
+    this.name$ = name;
+    this.ordinal$ = ordinal;
+  }
+  function MsgType_initFields() {
+    MsgType_initFields = function () {
+    };
+    MsgType$COMBAT_instance = new MsgType('COMBAT', 0, 'Combat', 'text-danger');
+  }
+  var MsgType$COMBAT_instance;
+  function MsgType$COMBAT_getInstance() {
+    MsgType_initFields();
+    return MsgType$COMBAT_instance;
+  }
+  MsgType.$metadata$ = {
+    kind: Kind_CLASS,
+    simpleName: 'MsgType',
+    interfaces: [Enum]
+  };
+  function MsgType$values() {
+    return [MsgType$COMBAT_getInstance()];
+  }
+  MsgType.values = MsgType$values;
+  function MsgType$valueOf(name) {
+    switch (name) {
+      case 'COMBAT':
+        return MsgType$COMBAT_getInstance();
+      default:throwISE('No enum constant hsl.util.MsgType.' + name);
+    }
+  }
+  MsgType.valueOf_61zpoe$ = MsgType$valueOf;
   _.main_kand9s$ = main;
   var package$hsl = _.hsl || (_.hsl = {});
   var package$core = package$hsl.core || (package$hsl.core = {});
@@ -886,8 +1014,6 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
     get: Game_getInstance
   });
   package$core.Hero = Hero;
-  package$core.IdFloatBinding = IdFloatBinding;
-  package$core.IdIntBinding = IdIntBinding;
   var package$mentor = package$core.mentor || (package$core.mentor = {});
   Object.defineProperty(package$mentor, 'Mentor', {
     get: Mentor_getInstance
@@ -908,6 +1034,15 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
   Object.defineProperty(package$generators, 'MonsterGenerator', {
     get: MonsterGenerator_getInstance
   });
+  package$core.IdFloatBinding = IdFloatBinding;
+  package$core.IdIntBinding = IdIntBinding;
+  var package$util = package$hsl.util || (package$hsl.util = {});
+  package$util.IdNotFoundException = IdNotFoundException;
+  package$util.Logger = Logger;
+  Object.defineProperty(MsgType, 'COMBAT', {
+    get: MsgType$COMBAT_getInstance
+  });
+  package$util.MsgType = MsgType;
   main([]);
   Kotlin.defineModule('HackSlashIdle', _);
   return _;

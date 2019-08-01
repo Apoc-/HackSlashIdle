@@ -1,5 +1,8 @@
 package hsl.core
 
+import hsl.util.Logger
+import hsl.util.MsgType
+
 class Hero : AttributeEffectSource {
     var Level: Int by IdIntBinding(1, "heroLevel")
     var Gold: Int by IdIntBinding(0, "heroGold")
@@ -14,7 +17,9 @@ class Hero : AttributeEffectSource {
         var died = monster.dealDamage(damage)
 
         if(died) {
-            println("Monster ${monster.name} died")
+            Game.Logger.logMsg(
+                    MsgType.COMBAT,
+                    "There has been a tragic and unforeseeable death: $monster")
             Gold += monster.getGold()
             Xp += monster.getXp()
         }

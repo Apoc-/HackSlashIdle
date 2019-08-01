@@ -21,4 +21,8 @@ class Monster(var name: String, var level: Int) {
     fun getXp(): Int {
         return level
     }
+
+    override fun toString(): String {
+        return "$name (Level $level)"
+    }
 }
