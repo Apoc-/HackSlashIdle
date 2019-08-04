@@ -34,7 +34,8 @@ class Logger(private val logContainerId: String) {
 }
 
 enum class MsgType(val logString: String, val textColorClass: String) {
-    COMBAT("Combat", "text-danger")
+    COMBAT("Combat", "text-danger"),
+    INFO("Info", "text-success")
 }
 
 

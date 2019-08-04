@@ -19,40 +19,46 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
   var Exception_init = Kotlin.kotlin.Exception_init_pdl1vj$;
   var clear = Kotlin.kotlin.dom.clear_asww5s$;
   var asList = Kotlin.org.w3c.dom.asList_kt9thq$;
+  var first = Kotlin.kotlin.collections.first_2p1efm$;
+  var throwCCE = Kotlin.throwCCE;
   var hasClass = Kotlin.kotlin.dom.hasClass_46n0ku$;
   var toInt = Kotlin.kotlin.text.toInt_pdl1vz$;
   var addClass = Kotlin.kotlin.dom.addClass_hhb33f$;
   var removeClass = Kotlin.kotlin.dom.removeClass_hhb33f$;
-  var throwCCE = Kotlin.throwCCE;
   var currentTimeMillis = $module$kotlinx_html_js.kotlinx.html.currentTimeMillis;
   var Kind_OBJECT = Kotlin.Kind.OBJECT;
   var to = Kotlin.kotlin.to_ujzrz7$;
   var mutableMapOf = Kotlin.kotlin.collections.mutableMapOf_qfcya0$;
   var mapOf = Kotlin.kotlin.collections.mapOf_qfcya0$;
+  var listOf = Kotlin.kotlin.collections.listOf_mh5how$;
   var get_create = $module$kotlinx_html_js.kotlinx.html.dom.get_create_4wc2mh$;
   var td = $module$kotlinx_html_js.kotlinx.html.td_vlzo05$;
   var set_id = $module$kotlinx_html_js.kotlinx.html.set_id_ueiko3$;
   var set_style = $module$kotlinx_html_js.kotlinx.html.set_style_ueiko3$;
   var tr = $module$kotlinx_html_js.kotlinx.html.js.tr_9pz0lc$;
+  var div = $module$kotlinx_html_js.kotlinx.html.div_ri36nr$;
+  var ButtonType = $module$kotlinx_html_js.kotlinx.html.ButtonType;
+  var button = $module$kotlinx_html_js.kotlinx.html.button_i4xb7r$;
+  var div_0 = $module$kotlinx_html_js.kotlinx.html.div_59el9d$;
   var img = $module$kotlinx_html_js.kotlinx.html.img_evw26v$;
   var h5 = $module$kotlinx_html_js.kotlinx.html.h5_aplb7s$;
   var set_role = $module$kotlinx_html_js.kotlinx.html.set_role_ueiko3$;
-  var div = $module$kotlinx_html_js.kotlinx.html.div_ri36nr$;
   var p = $module$kotlinx_html_js.kotlinx.html.p_8pggrc$;
-  var ButtonType = $module$kotlinx_html_js.kotlinx.html.ButtonType;
-  var button = $module$kotlinx_html_js.kotlinx.html.button_i4xb7r$;
-  var div_0 = $module$kotlinx_html_js.kotlinx.html.js.div_wkomt5$;
-  var button_0 = $module$kotlinx_html_js.kotlinx.html.js.button_yqfwmz$;
-  var ReadWriteProperty = Kotlin.kotlin.properties.ReadWriteProperty;
+  var div_1 = $module$kotlinx_html_js.kotlinx.html.js.div_wkomt5$;
+  var i = $module$kotlinx_html_js.kotlinx.html.i_5g1p9k$;
+  var span = $module$kotlinx_html_js.kotlinx.html.span_6djfml$;
+  var get_br = $module$kotlinx_html_js.kotlinx.html.get_br_6s7ubj$;
   var Exception = Kotlin.kotlin.Exception;
+  var ReadWriteProperty = Kotlin.kotlin.properties.ReadWriteProperty;
   var b = $module$kotlinx_html_js.kotlinx.html.b_r0mnq7$;
-  var div_1 = $module$kotlinx_html_js.kotlinx.html.div_59el9d$;
   AttributeEffectType.prototype = Object.create(Enum.prototype);
   AttributeEffectType.prototype.constructor = AttributeEffectType;
   AttributeType.prototype = Object.create(Enum.prototype);
   AttributeType.prototype.constructor = AttributeType;
   IdNotFoundException.prototype = Object.create(Exception.prototype);
   IdNotFoundException.prototype.constructor = IdNotFoundException;
+  AttributeNotFoundException.prototype = Object.create(Exception.prototype);
+  AttributeNotFoundException.prototype.constructor = AttributeNotFoundException;
   MsgType.prototype = Object.create(Enum.prototype);
   MsgType.prototype.constructor = MsgType;
   function main(args) {
@@ -85,20 +91,42 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
       return this._value_0;
     }
   });
+  var Math_0 = Math;
   Attribute.prototype.calculateValue_0 = function () {
     var calcValue = {v: this.baseValue_0};
+    var $receiver = this._attributeEffects_0;
+    var destination = ArrayList_init();
     var tmp$;
-    tmp$ = this._attributeEffects_0.iterator();
+    tmp$ = $receiver.iterator();
     while (tmp$.hasNext()) {
       var element = tmp$.next();
-      switch (element.type.name) {
-        case 'INCREMENT':
-          calcValue.v += element.value;
-          break;
-        case 'PERCENTAGE':
-          calcValue.v *= element.value;
-          break;
-      }
+      if (element.type === AttributeEffectType$INCREMENT_getInstance())
+        destination.add_11rb$(element);
+    }
+    var tmp$_0;
+    tmp$_0 = destination.iterator();
+    while (tmp$_0.hasNext()) {
+      var element_0 = tmp$_0.next();
+      calcValue.v += element_0.value;
+      var x = calcValue.v * 100;
+      calcValue.v = Math_0.floor(x) / 100;
+    }
+    var $receiver_0 = this._attributeEffects_0;
+    var destination_0 = ArrayList_init();
+    var tmp$_1;
+    tmp$_1 = $receiver_0.iterator();
+    while (tmp$_1.hasNext()) {
+      var element_1 = tmp$_1.next();
+      if (element_1.type === AttributeEffectType$PERCENTAGE_getInstance())
+        destination_0.add_11rb$(element_1);
+    }
+    var tmp$_2;
+    tmp$_2 = destination_0.iterator();
+    while (tmp$_2.hasNext()) {
+      var element_2 = tmp$_2.next();
+      calcValue.v *= element_2.value;
+      var x_0 = calcValue.v * 100;
+      calcValue.v = Math_0.floor(x_0) / 100;
     }
     return calcValue.v;
   };
@@ -269,6 +297,11 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
     this.initUpgradeButtons_0();
     this.fCount = 0;
   }
+  Game.prototype.addXp = function () {
+    var tmp$;
+    tmp$ = this.Hero;
+    tmp$.Xp = tmp$.Xp + 1000 | 0;
+  };
   Object.defineProperty(Game.prototype, 'CurrentMonster_0', {
     get: function () {
       if (this.CurrentMonster_mrunk1$_0 == null)
@@ -304,7 +337,7 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
       this.updateUpgradeButtons_0();
     }
     if (this.fCount % 30 === 0)
-      this.scollScrollContainers_0();
+      this.scrollAutoScrollContainers_0();
     this.handleAutoAttack_0();
   };
   Game.prototype.refreshAttributeTable = function () {
@@ -324,10 +357,12 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
     }
     this.Hero.recalculateAttributes();
   };
-  function Game$initUpgradeButtons$lambda(closure$upgrade, this$Game, closure$id) {
+  function Game$initUpgradeButtons$lambda(this$Game, closure$id, closure$upgrade, closure$upgradeContainer, closure$button) {
     return function (it) {
-      println('clicked ' + closure$upgrade.name);
+      var tmp$, tmp$_0;
       Mentor_getInstance().buyUpgrade_rsyqya$(this$Game.Hero, closure$id);
+      tmp$_0 = Kotlin.isType(tmp$ = closure$button, HTMLButtonElement) ? tmp$ : throwCCE();
+      this$Game.updateUpgradeButton_8f03gv$(closure$upgrade, closure$upgradeContainer, tmp$_0);
       return Unit;
     };
   }
@@ -343,25 +378,21 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
       var kvp = tmp$_0.next();
       var id = kvp.key;
       var upgrade = kvp.value;
-      var button = UpgradeButtonGenerator_getInstance().generateUpgradeButton_n047dd$(upgrade);
-      container.append(button);
-      button.addEventListener('click', Game$initUpgradeButtons$lambda(upgrade, this, id));
+      var upgradeContainer = UpgradeButtonGenerator_getInstance().generateUpgradeButton_n047dd$(upgrade);
+      var button = first(asList(upgradeContainer.getElementsByClassName('upgrade-button')));
+      container.append(upgradeContainer);
+      button.addEventListener('click', Game$initUpgradeButtons$lambda(this, id, upgrade, upgradeContainer, button));
+      upgrade.updatePriceTag();
     }
   };
-  Game.prototype.scollScrollContainers_0 = function () {
+  Game.prototype.scrollAutoScrollContainers_0 = function () {
     var scrollContainer = document.getElementsByClassName('auto-scroll');
     var tmp$;
     tmp$ = asList(scrollContainer).iterator();
     while (tmp$.hasNext()) {
       var element = tmp$.next();
       var isScrolled = (element.scrollHeight - element.clientHeight | 0) > element.scrollTop + 50;
-      println('---');
-      println(element.scrollHeight);
-      println(element.clientHeight);
-      println(element.scrollTop);
-      println('---');
       if (!isScrolled) {
-        println('scrln');
         element.scrollTop = element.scrollHeight - element.clientHeight | 0;
       }
     }
@@ -381,11 +412,12 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
     }
     var container = tmp$_0;
     var tmp$_1;
-    tmp$_1 = asList(container.getElementsByTagName('Button')).iterator();
+    tmp$_1 = asList(container.getElementsByClassName('btn-group')).iterator();
     while (tmp$_1.hasNext()) {
       var element = tmp$_1.next();
       var tmp$_2, tmp$_3;
-      tmp$_2 = element.getAttribute('upgrade-id');
+      var button = first(asList(element.getElementsByClassName('upgrade-button')));
+      tmp$_2 = button.getAttribute('upgrade-id');
       if (tmp$_2 == null) {
         return;
       }
@@ -395,11 +427,11 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
         return;
       }
       var upgrade = tmp$_3;
-      if (upgrade.bought || upgrade.price > this.Hero.Xp) {
-        element.setAttribute('disabled', 'disabled');
+      if (upgrade.gradesBought >= upgrade.grades || upgrade.calculatePrice() > this.Hero.Xp) {
+        button.setAttribute('disabled', 'disabled');
       }
        else {
-        element.removeAttribute('disabled');
+        button.removeAttribute('disabled');
       }
       if (!upgrade.enabled) {
         addClass(element, ['d-none']);
@@ -457,6 +489,12 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
     if (delta >= 1.0 / aps) {
       this.handleMonsterAttack_0();
       this.lastAutoAttack_0 = now;
+    }
+  };
+  Game.prototype.updateUpgradeButton_8f03gv$ = function (upgrade, upgradeContainer, button) {
+    if (upgrade.grades > 1) {
+      button.innerHTML = upgrade.name + ' ' + (upgrade.gradesBought + 1 | 0);
+      upgrade.updatePriceTag();
     }
   };
   Game.$metadata$ = {
@@ -524,6 +562,15 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
     this.Attributes.put_xwzc9p$(type, attr);
     Game_getInstance().refreshAttributeTable();
   };
+  Hero.prototype.addAttributeEffect_l1uk5f$ = function (attributeType, effect) {
+    var tmp$;
+    tmp$ = this.Attributes.get_11rb$(attributeType);
+    if (tmp$ == null) {
+      throw new AttributeNotFoundException(attributeType);
+    }
+    var attr = tmp$;
+    attr.applyAttributeEffect_e7t91x$(effect);
+  };
   Hero.prototype.recalculateAttributes = function () {
     println('Recalculating Attributes');
     var tmp$;
@@ -540,7 +587,7 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
   };
   function Mentor() {
     Mentor_instance = this;
-    this.upgrades = mapOf([to(1, new Upgrade(1, 2, 1, 'Automatic Attacks [WIP]', 'Teaches you to automatically attack.', Mentor$upgrades$lambda, 2, void 0, true)), to(2, new Upgrade(2, 10, 2, '', '', Mentor$upgrades$lambda_0)), to(3, new Upgrade(3, 10, 3, '3', '', Mentor$upgrades$lambda_1))]);
+    this.upgrades = mapOf([to(1, new Upgrade(1, 2, 'Automatic Attacks', 'Teaches you to automatically attack.', Mentor$upgrades$lambda, 2, void 0, void 0, true)), to(2, new Upgrade(2, 10, 'Faster Attacks', 'Increases your attacks per second by 0.1.', Mentor$upgrades$lambda_0(this), void 0, 100))]);
   }
   Mentor.prototype.buyUpgrade_rsyqya$ = function (hero, id) {
     var tmp$;
@@ -549,20 +596,20 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
       return;
     }
     var upgrade = tmp$;
-    if (upgrade.bought)
+    if (upgrade.gradesBought >= upgrade.grades)
       return;
-    if (upgrade.levelPreq > hero.Level)
-      return;
-    if (upgrade.price > hero.Xp)
+    if (upgrade.calculatePrice() > hero.Xp)
       return;
     if (!upgrade.enabled)
       return;
-    hero.Xp = hero.Xp - upgrade.price | 0;
+    hero.Xp = hero.Xp - upgrade.calculatePrice() | 0;
+    hero.Level = hero.Level + 1 | 0;
     upgrade.effect(hero);
-    upgrade.bought = true;
+    upgrade.gradesBought = upgrade.gradesBought + 1 | 0;
     if (upgrade.enables !== -1) {
       this.enableUpgrade_za3lpa$(upgrade.enables);
     }
+    Game_getInstance().Logger.logMsg_uzephu$(MsgType$INFO_getInstance(), 'Contrary to my expectations you learned ' + upgrade.name + '.');
   };
   Mentor.prototype.enableUpgrade_za3lpa$ = function (id) {
     var tmp$;
@@ -577,18 +624,16 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
     it.addAttribute_ub91zl$(0.1, AttributeType$APS_getInstance());
     return Unit;
   }
-  function Mentor$upgrades$lambda_0(it) {
-    it.addAttribute_ub91zl$(0.1, AttributeType$APS_getInstance());
-    return Unit;
-  }
-  function Mentor$upgrades$lambda_1(it) {
-    it.addAttribute_ub91zl$(0.1, AttributeType$APS_getInstance());
-    return Unit;
+  function Mentor$upgrades$lambda_0(this$Mentor) {
+    return function (it) {
+      it.addAttributeEffect_l1uk5f$(AttributeType$APS_getInstance(), new AttributeEffect(this$Mentor, AttributeEffectType$INCREMENT_getInstance(), 0.1));
+      return Unit;
+    };
   }
   Mentor.$metadata$ = {
     kind: Kind_OBJECT,
     simpleName: 'Mentor',
-    interfaces: []
+    interfaces: [AttributeEffectSource]
   };
   var Mentor_instance = null;
   function Mentor_getInstance() {
@@ -597,23 +642,41 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
     }
     return Mentor_instance;
   }
-  function Upgrade(id, price, levelPreq, name, tooltip, effect, enables, bought, enabled) {
+  function Upgrade(id, basePrice, name, tooltip, effect, enables, grades, gradesBought, enabled) {
     if (enables === void 0)
       enables = -1;
-    if (bought === void 0)
-      bought = false;
+    if (grades === void 0)
+      grades = 1;
+    if (gradesBought === void 0)
+      gradesBought = 0;
     if (enabled === void 0)
       enabled = false;
     this.id = id;
-    this.price = price;
-    this.levelPreq = levelPreq;
+    this.basePrice = basePrice;
     this.name = name;
     this.tooltip = tooltip;
     this.effect = effect;
     this.enables = enables;
-    this.bought = bought;
+    this.grades = grades;
+    this.gradesBought = gradesBought;
     this.enabled = enabled;
+    this._priceTagValue_z7z0ws$_0 = new IdIntBinding(this.basePrice, 'upgrade' + this.id + 'PriceTag');
   }
+  var Upgrade$_priceTagValue_metadata = new PropertyMetadata('_priceTagValue');
+  Object.defineProperty(Upgrade.prototype, '_priceTagValue_0', {
+    get: function () {
+      return this._priceTagValue_z7z0ws$_0.getValue_lrcp0p$(this, Upgrade$_priceTagValue_metadata);
+    },
+    set: function (_priceTagValue) {
+      this._priceTagValue_z7z0ws$_0.setValue_9rddgb$(this, Upgrade$_priceTagValue_metadata, _priceTagValue);
+    }
+  });
+  Upgrade.prototype.updatePriceTag = function () {
+    this._priceTagValue_0 = this.calculatePrice();
+  };
+  Upgrade.prototype.calculatePrice = function () {
+    return this.basePrice + Kotlin.imul(Kotlin.imul(this.basePrice, this.gradesBought), this.gradesBought) | 0;
+  };
   Upgrade.$metadata$ = {
     kind: Kind_CLASS,
     simpleName: 'Upgrade',
@@ -623,50 +686,50 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
     return this.id;
   };
   Upgrade.prototype.component2 = function () {
-    return this.price;
+    return this.basePrice;
   };
   Upgrade.prototype.component3 = function () {
-    return this.levelPreq;
-  };
-  Upgrade.prototype.component4 = function () {
     return this.name;
   };
-  Upgrade.prototype.component5 = function () {
+  Upgrade.prototype.component4 = function () {
     return this.tooltip;
   };
-  Upgrade.prototype.component6 = function () {
+  Upgrade.prototype.component5 = function () {
     return this.effect;
   };
-  Upgrade.prototype.component7 = function () {
+  Upgrade.prototype.component6 = function () {
     return this.enables;
   };
+  Upgrade.prototype.component7 = function () {
+    return this.grades;
+  };
   Upgrade.prototype.component8 = function () {
-    return this.bought;
+    return this.gradesBought;
   };
   Upgrade.prototype.component9 = function () {
     return this.enabled;
   };
-  Upgrade.prototype.copy_nll3yh$ = function (id, price, levelPreq, name, tooltip, effect, enables, bought, enabled) {
-    return new Upgrade(id === void 0 ? this.id : id, price === void 0 ? this.price : price, levelPreq === void 0 ? this.levelPreq : levelPreq, name === void 0 ? this.name : name, tooltip === void 0 ? this.tooltip : tooltip, effect === void 0 ? this.effect : effect, enables === void 0 ? this.enables : enables, bought === void 0 ? this.bought : bought, enabled === void 0 ? this.enabled : enabled);
+  Upgrade.prototype.copy_g57ugo$ = function (id, basePrice, name, tooltip, effect, enables, grades, gradesBought, enabled) {
+    return new Upgrade(id === void 0 ? this.id : id, basePrice === void 0 ? this.basePrice : basePrice, name === void 0 ? this.name : name, tooltip === void 0 ? this.tooltip : tooltip, effect === void 0 ? this.effect : effect, enables === void 0 ? this.enables : enables, grades === void 0 ? this.grades : grades, gradesBought === void 0 ? this.gradesBought : gradesBought, enabled === void 0 ? this.enabled : enabled);
   };
   Upgrade.prototype.toString = function () {
-    return 'Upgrade(id=' + Kotlin.toString(this.id) + (', price=' + Kotlin.toString(this.price)) + (', levelPreq=' + Kotlin.toString(this.levelPreq)) + (', name=' + Kotlin.toString(this.name)) + (', tooltip=' + Kotlin.toString(this.tooltip)) + (', effect=' + Kotlin.toString(this.effect)) + (', enables=' + Kotlin.toString(this.enables)) + (', bought=' + Kotlin.toString(this.bought)) + (', enabled=' + Kotlin.toString(this.enabled)) + ')';
+    return 'Upgrade(id=' + Kotlin.toString(this.id) + (', basePrice=' + Kotlin.toString(this.basePrice)) + (', name=' + Kotlin.toString(this.name)) + (', tooltip=' + Kotlin.toString(this.tooltip)) + (', effect=' + Kotlin.toString(this.effect)) + (', enables=' + Kotlin.toString(this.enables)) + (', grades=' + Kotlin.toString(this.grades)) + (', gradesBought=' + Kotlin.toString(this.gradesBought)) + (', enabled=' + Kotlin.toString(this.enabled)) + ')';
   };
   Upgrade.prototype.hashCode = function () {
     var result = 0;
     result = result * 31 + Kotlin.hashCode(this.id) | 0;
-    result = result * 31 + Kotlin.hashCode(this.price) | 0;
-    result = result * 31 + Kotlin.hashCode(this.levelPreq) | 0;
+    result = result * 31 + Kotlin.hashCode(this.basePrice) | 0;
     result = result * 31 + Kotlin.hashCode(this.name) | 0;
     result = result * 31 + Kotlin.hashCode(this.tooltip) | 0;
     result = result * 31 + Kotlin.hashCode(this.effect) | 0;
     result = result * 31 + Kotlin.hashCode(this.enables) | 0;
-    result = result * 31 + Kotlin.hashCode(this.bought) | 0;
+    result = result * 31 + Kotlin.hashCode(this.grades) | 0;
+    result = result * 31 + Kotlin.hashCode(this.gradesBought) | 0;
     result = result * 31 + Kotlin.hashCode(this.enabled) | 0;
     return result;
   };
   Upgrade.prototype.equals = function (other) {
-    return this === other || (other !== null && (typeof other === 'object' && (Object.getPrototypeOf(this) === Object.getPrototypeOf(other) && (Kotlin.equals(this.id, other.id) && Kotlin.equals(this.price, other.price) && Kotlin.equals(this.levelPreq, other.levelPreq) && Kotlin.equals(this.name, other.name) && Kotlin.equals(this.tooltip, other.tooltip) && Kotlin.equals(this.effect, other.effect) && Kotlin.equals(this.enables, other.enables) && Kotlin.equals(this.bought, other.bought) && Kotlin.equals(this.enabled, other.enabled)))));
+    return this === other || (other !== null && (typeof other === 'object' && (Object.getPrototypeOf(this) === Object.getPrototypeOf(other) && (Kotlin.equals(this.id, other.id) && Kotlin.equals(this.basePrice, other.basePrice) && Kotlin.equals(this.name, other.name) && Kotlin.equals(this.tooltip, other.tooltip) && Kotlin.equals(this.effect, other.effect) && Kotlin.equals(this.enables, other.enables) && Kotlin.equals(this.grades, other.grades) && Kotlin.equals(this.gradesBought, other.gradesBought) && Kotlin.equals(this.enabled, other.enabled)))));
   };
   function Monster(name, level) {
     this.name = name;
@@ -703,6 +766,59 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
     kind: Kind_CLASS,
     simpleName: 'Monster',
     interfaces: []
+  };
+  function World(locations) {
+    this.locations = locations;
+    this.locations = listOf(new Location('Meadows', 3, true));
+  }
+  World.$metadata$ = {
+    kind: Kind_CLASS,
+    simpleName: 'World',
+    interfaces: []
+  };
+  function Location(name, dungeons, known, dungeonsFound) {
+    if (known === void 0)
+      known = false;
+    if (dungeonsFound === void 0)
+      dungeonsFound = 0;
+    this.name = name;
+    this.dungeons = dungeons;
+    this.known = known;
+    this.dungeonsFound = dungeonsFound;
+  }
+  Location.$metadata$ = {
+    kind: Kind_CLASS,
+    simpleName: 'Location',
+    interfaces: []
+  };
+  Location.prototype.component1 = function () {
+    return this.name;
+  };
+  Location.prototype.component2 = function () {
+    return this.dungeons;
+  };
+  Location.prototype.component3 = function () {
+    return this.known;
+  };
+  Location.prototype.component4 = function () {
+    return this.dungeonsFound;
+  };
+  Location.prototype.copy_lgzhfb$ = function (name, dungeons, known, dungeonsFound) {
+    return new Location(name === void 0 ? this.name : name, dungeons === void 0 ? this.dungeons : dungeons, known === void 0 ? this.known : known, dungeonsFound === void 0 ? this.dungeonsFound : dungeonsFound);
+  };
+  Location.prototype.toString = function () {
+    return 'Location(name=' + Kotlin.toString(this.name) + (', dungeons=' + Kotlin.toString(this.dungeons)) + (', known=' + Kotlin.toString(this.known)) + (', dungeonsFound=' + Kotlin.toString(this.dungeonsFound)) + ')';
+  };
+  Location.prototype.hashCode = function () {
+    var result = 0;
+    result = result * 31 + Kotlin.hashCode(this.name) | 0;
+    result = result * 31 + Kotlin.hashCode(this.dungeons) | 0;
+    result = result * 31 + Kotlin.hashCode(this.known) | 0;
+    result = result * 31 + Kotlin.hashCode(this.dungeonsFound) | 0;
+    return result;
+  };
+  Location.prototype.equals = function (other) {
+    return this === other || (other !== null && (typeof other === 'object' && (Object.getPrototypeOf(this) === Object.getPrototypeOf(other) && (Kotlin.equals(this.name, other.name) && Kotlin.equals(this.dungeons, other.dungeons) && Kotlin.equals(this.known, other.known) && Kotlin.equals(this.dungeonsFound, other.dungeonsFound)))));
   };
   function AttributeTableRowGenerator() {
     AttributeTableRowGenerator_instance = this;
@@ -742,6 +858,58 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
       new AttributeTableRowGenerator();
     }
     return AttributeTableRowGenerator_instance;
+  }
+  function LocationRowGenerator() {
+    LocationRowGenerator_instance = this;
+  }
+  function LocationRowGenerator$generateLocationRow$lambda$lambda(closure$location) {
+    return function ($receiver) {
+      $receiver.unaryPlus_pdl1vz$(closure$location.name);
+      return Unit;
+    };
+  }
+  function LocationRowGenerator$generateLocationRow$lambda$lambda$lambda($receiver) {
+    $receiver.type = ButtonType.button;
+    $receiver.unaryPlus_pdl1vz$('Fight Monsters');
+    return Unit;
+  }
+  function LocationRowGenerator$generateLocationRow$lambda$lambda_0($receiver) {
+    button($receiver, void 0, void 0, void 0, void 0, 'btn btn-primary w-100', LocationRowGenerator$generateLocationRow$lambda$lambda$lambda);
+    return Unit;
+  }
+  function LocationRowGenerator$generateLocationRow$lambda$lambda$lambda_0($receiver) {
+    $receiver.type = ButtonType.button;
+    $receiver.unaryPlus_pdl1vz$('Explore');
+    return Unit;
+  }
+  function LocationRowGenerator$generateLocationRow$lambda$lambda_1($receiver) {
+    button($receiver, void 0, void 0, void 0, void 0, 'btn btn-primary w-100', LocationRowGenerator$generateLocationRow$lambda$lambda$lambda_0);
+    return Unit;
+  }
+  function LocationRowGenerator$generateLocationRow$lambda(closure$location) {
+    return function ($receiver) {
+      set_id($receiver, 'locationRow' + closure$location.name);
+      div($receiver, 'col-6', LocationRowGenerator$generateLocationRow$lambda$lambda(closure$location));
+      div($receiver, 'col', LocationRowGenerator$generateLocationRow$lambda$lambda_0);
+      div($receiver, 'col', LocationRowGenerator$generateLocationRow$lambda$lambda_1);
+      return Unit;
+    };
+  }
+  LocationRowGenerator.prototype.generateLocationRow_yw5djh$ = function (location) {
+    var row = div_0(get_create(document), 'row', LocationRowGenerator$generateLocationRow$lambda(location));
+    return row;
+  };
+  LocationRowGenerator.$metadata$ = {
+    kind: Kind_OBJECT,
+    simpleName: 'LocationRowGenerator',
+    interfaces: []
+  };
+  var LocationRowGenerator_instance = null;
+  function LocationRowGenerator_getInstance() {
+    if (LocationRowGenerator_instance === null) {
+      new LocationRowGenerator();
+    }
+    return LocationRowGenerator_instance;
   }
   function MonsterCardGenerator() {
     MonsterCardGenerator_instance = this;
@@ -795,7 +963,7 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
     };
   }
   MonsterCardGenerator.prototype.generateMonsterCard_lm0ins$ = function (monster) {
-    var card = div_0(get_create(document), 'card mx-auto', MonsterCardGenerator$generateMonsterCard$lambda(monster));
+    var card = div_1(get_create(document), 'card mx-auto', MonsterCardGenerator$generateMonsterCard$lambda(monster));
     return card;
   };
   MonsterCardGenerator.$metadata$ = {
@@ -813,7 +981,7 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
   function UpgradeButtonGenerator() {
     UpgradeButtonGenerator_instance = this;
   }
-  function UpgradeButtonGenerator$generateUpgradeButton$lambda(closure$upgrade) {
+  function UpgradeButtonGenerator$generateUpgradeButton$lambda$lambda$lambda(closure$upgrade) {
     return function ($receiver) {
       $receiver.type = ButtonType.button;
       var $receiver_0 = $receiver.attributes;
@@ -824,8 +992,59 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
       return Unit;
     };
   }
+  function UpgradeButtonGenerator$generateUpgradeButton$lambda$lambda$lambda_0(closure$collapseId) {
+    return function ($receiver) {
+      var $receiver_0 = $receiver.attributes;
+      var key = 'data-toggle';
+      var value = 'collapse';
+      $receiver_0.put_xwzc9p$(key, value);
+      var $receiver_1 = $receiver.attributes;
+      var key_0 = 'data-target';
+      var value_0 = '#' + closure$collapseId.v;
+      $receiver_1.put_xwzc9p$(key_0, value_0);
+      i($receiver, 'fa fa-angle-down');
+      return Unit;
+    };
+  }
+  function UpgradeButtonGenerator$generateUpgradeButton$lambda$lambda(closure$upgrade, closure$collapseId) {
+    return function ($receiver) {
+      set_role($receiver, 'group');
+      button($receiver, void 0, void 0, void 0, void 0, 'btn btn-primary w-75 upgrade-button', UpgradeButtonGenerator$generateUpgradeButton$lambda$lambda$lambda(closure$upgrade));
+      button($receiver, void 0, void 0, void 0, void 0, 'btn btn-secondary', UpgradeButtonGenerator$generateUpgradeButton$lambda$lambda$lambda_0(closure$collapseId));
+      return Unit;
+    };
+  }
+  function UpgradeButtonGenerator$generateUpgradeButton$lambda$lambda$lambda_1(closure$upgrade) {
+    return function ($receiver) {
+      set_id($receiver, 'upgrade' + closure$upgrade.id + 'PriceTag');
+      return Unit;
+    };
+  }
+  function UpgradeButtonGenerator$generateUpgradeButton$lambda$lambda_0(closure$collapseId, closure$upgrade) {
+    return function ($receiver) {
+      set_id($receiver, closure$collapseId.v);
+      var $receiver_0 = $receiver.attributes;
+      var key = 'data-parent';
+      var value = '#upgradeButtonsContainer';
+      $receiver_0.put_xwzc9p$(key, value);
+      $receiver.unaryPlus_pdl1vz$('XP Cost: ');
+      span($receiver, void 0, UpgradeButtonGenerator$generateUpgradeButton$lambda$lambda$lambda_1(closure$upgrade));
+      get_br($receiver);
+      $receiver.unaryPlus_pdl1vz$(closure$upgrade.tooltip);
+      return Unit;
+    };
+  }
+  function UpgradeButtonGenerator$generateUpgradeButton$lambda(closure$upgrade) {
+    return function ($receiver) {
+      var collapseId = {v: 'upgrade' + closure$upgrade.id + 'Collapse'};
+      set_id($receiver, 'upgrade' + closure$upgrade.id + 'Container');
+      div($receiver, 'btn-group btn-group-lg w-100', UpgradeButtonGenerator$generateUpgradeButton$lambda$lambda(closure$upgrade, collapseId));
+      div($receiver, 'collapse', UpgradeButtonGenerator$generateUpgradeButton$lambda$lambda_0(collapseId, closure$upgrade));
+      return Unit;
+    };
+  }
   UpgradeButtonGenerator.prototype.generateUpgradeButton_n047dd$ = function (upgrade) {
-    var button = button_0(get_create(document), void 0, void 0, void 0, void 0, 'btn btn-primary btn-lg btn-block', UpgradeButtonGenerator$generateUpgradeButton$lambda(upgrade));
+    var button = div_0(get_create(document), void 0, UpgradeButtonGenerator$generateUpgradeButton$lambda(upgrade));
     return button;
   };
   UpgradeButtonGenerator.$metadata$ = {
@@ -858,6 +1077,30 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
     }
     return MonsterGenerator_instance;
   }
+  function IdNotFoundException(id) {
+    Exception_init('IdNotFoundException: ' + id + ' not found in document.', this);
+    this.name = 'IdNotFoundException';
+  }
+  IdNotFoundException.$metadata$ = {
+    kind: Kind_CLASS,
+    simpleName: 'IdNotFoundException',
+    interfaces: [Exception]
+  };
+  function AttributeNotFoundException(type) {
+    Exception_init('Attribute with ' + type + ' not found.', this);
+    this.name = 'AttributeNotFoundException';
+  }
+  AttributeNotFoundException.$metadata$ = {
+    kind: Kind_CLASS,
+    simpleName: 'AttributeNotFoundException',
+    interfaces: [Exception]
+  };
+  function format($receiver, digits) {
+    return $receiver.format(digits);
+  }
+  function format_0($receiver, digits) {
+    return $receiver.format(digits);
+  }
   function IdFloatBinding(initialValue, id) {
     this.id = id;
     this.value_0 = initialValue;
@@ -867,7 +1110,7 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
         println('Element with id: ' + this.id + ' not found.');
     }
      else {
-      element.innerHTML = this.value_0.toString();
+      element.innerHTML = format_0(this.value_0, 2);
     }
   }
   IdFloatBinding.prototype.getValue_lrcp0p$ = function (thisRef, property) {
@@ -902,15 +1145,6 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
     kind: Kind_CLASS,
     simpleName: 'IdIntBinding',
     interfaces: [ReadWriteProperty]
-  };
-  function IdNotFoundException(id) {
-    Exception_init('IdNotFoundException: ' + id + ' not found in document.', this);
-    this.name = 'IdNotFoundException';
-  }
-  IdNotFoundException.$metadata$ = {
-    kind: Kind_CLASS,
-    simpleName: 'IdNotFoundException',
-    interfaces: [Exception]
   };
   function Logger(logContainerId) {
     this.logContainerId_0 = logContainerId;
@@ -948,7 +1182,7 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
   }
   Logger.prototype.logMsg_uzephu$ = function (msgType, msg) {
     var date = (new Date()).toDateString();
-    var entry = div_1(get_create(document), 'row ' + msgType.textColorClass, Logger$logMsg$lambda(msgType, msg));
+    var entry = div_0(get_create(document), 'row ' + msgType.textColorClass, Logger$logMsg$lambda(msgType, msg));
     this.container_0.append(entry);
   };
   Logger.$metadata$ = {
@@ -967,11 +1201,17 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
     MsgType_initFields = function () {
     };
     MsgType$COMBAT_instance = new MsgType('COMBAT', 0, 'Combat', 'text-danger');
+    MsgType$INFO_instance = new MsgType('INFO', 1, 'Info', 'text-success');
   }
   var MsgType$COMBAT_instance;
   function MsgType$COMBAT_getInstance() {
     MsgType_initFields();
     return MsgType$COMBAT_instance;
+  }
+  var MsgType$INFO_instance;
+  function MsgType$INFO_getInstance() {
+    MsgType_initFields();
+    return MsgType$INFO_instance;
   }
   MsgType.$metadata$ = {
     kind: Kind_CLASS,
@@ -979,13 +1219,15 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
     interfaces: [Enum]
   };
   function MsgType$values() {
-    return [MsgType$COMBAT_getInstance()];
+    return [MsgType$COMBAT_getInstance(), MsgType$INFO_getInstance()];
   }
   MsgType.values = MsgType$values;
   function MsgType$valueOf(name) {
     switch (name) {
       case 'COMBAT':
         return MsgType$COMBAT_getInstance();
+      case 'INFO':
+        return MsgType$INFO_getInstance();
       default:throwISE('No enum constant hsl.util.MsgType.' + name);
     }
   }
@@ -1020,10 +1262,16 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
   });
   package$mentor.Upgrade = Upgrade;
   package$core.Monster = Monster;
+  var package$world = package$core.world || (package$core.world = {});
+  package$world.World = World;
+  package$world.Location = Location;
   var package$generators = package$hsl.generators || (package$hsl.generators = {});
   var package$html = package$generators.html || (package$generators.html = {});
   Object.defineProperty(package$html, 'AttributeTableRowGenerator', {
     get: AttributeTableRowGenerator_getInstance
+  });
+  Object.defineProperty(package$html, 'LocationRowGenerator', {
+    get: LocationRowGenerator_getInstance
   });
   Object.defineProperty(package$html, 'MonsterCardGenerator', {
     get: MonsterCardGenerator_getInstance
@@ -1034,13 +1282,19 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
   Object.defineProperty(package$generators, 'MonsterGenerator', {
     get: MonsterGenerator_getInstance
   });
-  package$core.IdFloatBinding = IdFloatBinding;
-  package$core.IdIntBinding = IdIntBinding;
   var package$util = package$hsl.util || (package$hsl.util = {});
   package$util.IdNotFoundException = IdNotFoundException;
+  package$util.AttributeNotFoundException = AttributeNotFoundException;
+  package$util.format_j6vyb1$ = format;
+  package$util.format_lcymw2$ = format_0;
+  package$util.IdFloatBinding = IdFloatBinding;
+  package$core.IdIntBinding = IdIntBinding;
   package$util.Logger = Logger;
   Object.defineProperty(MsgType, 'COMBAT', {
     get: MsgType$COMBAT_getInstance
+  });
+  Object.defineProperty(MsgType, 'INFO', {
+    get: MsgType$INFO_getInstance
   });
   package$util.MsgType = MsgType;
   main([]);

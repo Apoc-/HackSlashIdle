@@ -1,5 +1,6 @@
-package hsl.core
+package hsl.util
 
+import hsl.core.Game
 import kotlin.browser.document
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
@@ -13,7 +14,7 @@ class IdFloatBinding(initialValue: Float, var id: String) : ReadWriteProperty<An
         if (element == null) {
             if(Game.DEBUG) println("Element with id: $id not found.")
         } else {
-            element.innerHTML = value.toString()
+            element.innerHTML = value.format(2)
         }
     }
 

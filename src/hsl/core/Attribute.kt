@@ -1,5 +1,8 @@
 package hsl.core
 
+import hsl.util.IdFloatBinding
+import kotlin.math.floor
+
 class Attribute(private var baseValue: Float, var type: AttributeType) {
     private var _value by IdFloatBinding(baseValue, "attr${type.name}")
     val value: Float
@@ -18,12 +21,23 @@ class Attribute(private var baseValue: Float, var type: AttributeType) {
     private fun calculateValue(): Float {
         var calcValue = baseValue
 
-        _attributeEffects.forEach {
-            when(it.type) {
-                AttributeEffectType.INCREMENT -> calcValue += it.value
-                AttributeEffectType.PERCENTAGE -> calcValue *= it.value
-            }
-        }
+        _attributeEffects
+                .filter { it.type == AttributeEffectType.INCREMENT }
+                .forEach {
+                    calcValue += it.value
+
+                    //workaround for js rounding issues
+                    calcValue = floor(calcValue * 100) / 100
+                }
+
+        _attributeEffects
+                .filter { it.type == AttributeEffectType.PERCENTAGE }
+                .forEach {
+                    calcValue *= it.value
+
+                    //workaround for js rounding issues
+                    calcValue = floor(calcValue * 100) / 100
+                }
 
         return calcValue
     }

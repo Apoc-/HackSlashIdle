@@ -1,5 +1,7 @@
 package hsl.core
 
+import hsl.util.IdFloatBinding
+
 class Monster(var name: String, var level: Int) {
     var maxHealth: Float = level * 10f
     var currentHealth: Float by IdFloatBinding(level * 10f, "monsterHealth")

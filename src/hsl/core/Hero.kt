@@ -1,5 +1,6 @@
 package hsl.core
 
+import hsl.util.AttributeNotFoundException
 import hsl.util.Logger
 import hsl.util.MsgType
 
@@ -20,6 +21,7 @@ class Hero : AttributeEffectSource {
             Game.Logger.logMsg(
                     MsgType.COMBAT,
                     "There has been a tragic and unforeseeable death: $monster")
+
             Gold += monster.getGold()
             Xp += monster.getXp()
         }
@@ -28,7 +30,7 @@ class Hero : AttributeEffectSource {
     }
 
     fun addAttribute(baseValue: Float, type: AttributeType) {
-        var attr = Attribute(baseValue, type)
+        val attr = Attribute(baseValue, type)
         if(Attributes[type] != null) {
             println("AttributeType $type already known.")
             return
@@ -36,6 +38,12 @@ class Hero : AttributeEffectSource {
 
         Attributes[type] = attr
         Game.refreshAttributeTable()
+    }
+
+    fun addAttributeEffect(attributeType: AttributeType, effect: AttributeEffect) {
+        val attr = Attributes[attributeType] ?: throw AttributeNotFoundException(attributeType)
+
+        attr.applyAttributeEffect(effect)
     }
 
     fun recalculateAttributes() {

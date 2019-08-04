@@ -1,15 +1,14 @@
 package hsl.core
 
 import hsl.core.mentor.Mentor
+import hsl.core.mentor.Upgrade
 import hsl.generators.MonsterGenerator
 import hsl.generators.html.AttributeTableRowGenerator
 import hsl.generators.html.MonsterCardGenerator
 import hsl.generators.html.UpgradeButtonGenerator
 import hsl.util.Logger
 import kotlinx.html.currentTimeMillis
-import org.w3c.dom.HTMLButtonElement
-import org.w3c.dom.HTMLDivElement
-import org.w3c.dom.asList
+import org.w3c.dom.*
 import kotlin.browser.document
 import kotlin.browser.window
 import kotlin.dom.addClass
@@ -19,6 +18,10 @@ import kotlin.dom.removeClass
 import kotlin.js.Date
 
 object Game {
+    fun addXp() {
+        Hero.Xp += 1000
+    }
+
     var Hero = Hero()
     val Logger = Logger("logContainer")
     private lateinit var CurrentMonster: Monster
@@ -41,7 +44,6 @@ object Game {
         initUpgradeButtons()
     }
 
-
     var fCount = 0
     fun gameLoop() {
         window.requestAnimationFrame {
@@ -55,9 +57,6 @@ object Game {
             fCount += 1
 
             updateUpgradeButtons()
-
-
-
         }
 
         //every 30 frames, update autoScrollContainers
@@ -85,13 +84,16 @@ object Game {
         for (kvp in Mentor.upgrades) {
             val id = kvp.key
             val upgrade = kvp.value
-            val button = UpgradeButtonGenerator.generateUpgradeButton(upgrade)
-            container.append(button)
+            val upgradeContainer = UpgradeButtonGenerator.generateUpgradeButton(upgrade)
+            val button = upgradeContainer.getElementsByClassName("upgrade-button").asList().first()
+            container.append(upgradeContainer)
 
             button.addEventListener("click", {
-                println("clicked ${upgrade.name}")
                 Mentor.buyUpgrade(Hero, id)
+                updateUpgradeButton(upgrade, upgradeContainer, button as HTMLButtonElement)
             })
+
+            upgrade.updatePriceTag()
         }
     }
 
@@ -115,14 +117,15 @@ object Game {
 
         val container = document.getElementById("upgradeButtonsContainer") ?: return
 
-        container.getElementsByTagName("Button").asList().forEach {
-            var id = it.getAttribute("upgrade-id") ?: return
+        container.getElementsByClassName("btn-group").asList().forEach {
+            var button = it.getElementsByClassName("upgrade-button").asList().first()
+            var id = button.getAttribute("upgrade-id") ?: return
             var upgrade = Mentor.upgrades[id.toInt()] ?: return
 
-            if(upgrade.bought || upgrade.price > Hero.Xp) {
-                it.setAttribute("disabled", "disabled")
+            if(upgrade.gradesBought >= upgrade.grades || upgrade.calculatePrice() > Hero.Xp) {
+                button.setAttribute("disabled", "disabled")
             } else {
-                it.removeAttribute("disabled")
+                button.removeAttribute("disabled")
             }
 
             if(!upgrade.enabled) {
@@ -184,6 +187,14 @@ object Game {
             handleMonsterAttack()
 
             lastAutoAttack = now
+        }
+    }
+
+    fun updateUpgradeButton(upgrade: Upgrade, upgradeContainer: HTMLElement, button: HTMLButtonElement) {
+        if(upgrade.grades > 1) {
+            button.innerHTML = "${upgrade.name} ${upgrade.gradesBought+1}"
+
+            upgrade.updatePriceTag()
         }
     }
 }

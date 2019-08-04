@@ -9,15 +9,6 @@ import kotlinx.html.td
 import org.w3c.dom.HTMLTableRowElement
 import kotlin.browser.document
 
-/*
-
-<tr>
-                            <td>DMG</td>
-                            <td id="attrDMG" style="text-align: right"></td>
-                        </tr>
- */
-
-
 object AttributeTableRowGenerator {
     fun generateAttributeTableRow(attr: Attribute): HTMLTableRowElement {
         var row = document.create.tr {
