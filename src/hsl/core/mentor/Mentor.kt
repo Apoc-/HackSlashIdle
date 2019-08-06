@@ -26,6 +26,19 @@ object Mentor : AttributeEffectSource {
                                 AttributeType.APS,
                                 AttributeEffect(this, AttributeEffectType.INCREMENT, 0.1f)
                         )
+                    })),
+            (3 to Upgrade(
+                    id = 3,
+                    basePrice = 1,
+                    enabled = true,
+                    name = "Harder Hits",
+                    tooltip = "Increases your damage by 1.",
+                    grades = 100,
+                    effect = {
+                        it.addAttributeEffect(
+                                AttributeType.DMG,
+                                AttributeEffect(this, AttributeEffectType.INCREMENT, 1f)
+                        )
                     }))
     )
 

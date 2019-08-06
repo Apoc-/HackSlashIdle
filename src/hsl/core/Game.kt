@@ -2,6 +2,7 @@ package hsl.core
 
 import hsl.core.mentor.Mentor
 import hsl.core.mentor.Upgrade
+import hsl.core.world.World
 import hsl.generators.MonsterGenerator
 import hsl.generators.html.AttributeTableRowGenerator
 import hsl.generators.html.MonsterCardGenerator
@@ -23,8 +24,12 @@ object Game {
     }
 
     var Hero = Hero()
+    var World = World()
+    private var currentLocationId = 1
+
     val Logger = Logger("logContainer")
     private lateinit var CurrentMonster: Monster
+    private var monsterIsSpawned = false
     private lateinit var CurrentMonsterCard: HTMLDivElement
 
     private var lastAutoAttack = 0f
@@ -39,7 +44,10 @@ object Game {
     const val DEBUG: Boolean = false
 
     init {
-        spawnMonster()
+        if(currentLocationId != 0) {
+            spawnMonster()
+        }
+
         refreshAttributeTable()
         initUpgradeButtons()
     }
@@ -62,7 +70,13 @@ object Game {
         //every 30 frames, update autoScrollContainers
         if(fCount%30 == 0) scrollAutoScrollContainers()
 
-        handleAutoAttack()
+        if(!monsterIsSpawned && currentLocationId != 0) {
+            spawnMonster()
+        }
+
+        if(monsterIsSpawned && currentLocationId != 0) {
+            handleAutoAttack()
+        }
     }
 
     fun refreshAttributeTable() {
@@ -142,6 +156,8 @@ object Game {
 
         val button = document.getElementById("monsterAttackButton") as HTMLButtonElement
         button.addEventListener("click", { handleMonsterAttack() })
+
+        monsterIsSpawned = true;
     }
 
     private fun createMonsterCard(monster: Monster): HTMLDivElement {
@@ -159,7 +175,7 @@ object Game {
 
         if(died) {
             destroyMonsterCard()
-            spawnMonster()
+            monsterIsSpawned = false;
         }
     }
 

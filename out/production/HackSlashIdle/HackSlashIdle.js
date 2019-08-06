@@ -8,14 +8,16 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
   'use strict';
   var println = Kotlin.kotlin.io.println_s8jyv4$;
   var PropertyMetadata = Kotlin.PropertyMetadata;
-  var Unit = Kotlin.kotlin.Unit;
   var equals = Kotlin.equals;
   var toMutableList = Kotlin.kotlin.collections.toMutableList_4c7yge$;
   var Kind_CLASS = Kotlin.Kind.CLASS;
   var Enum = Kotlin.kotlin.Enum;
   var throwISE = Kotlin.throwISE;
   var Kind_INTERFACE = Kotlin.Kind.INTERFACE;
+  var ArrayList_init = Kotlin.kotlin.collections.ArrayList_init_287e2$;
+  var Math_0 = Math;
   var throwUPAE = Kotlin.throwUPAE;
+  var Unit = Kotlin.kotlin.Unit;
   var Exception_init = Kotlin.kotlin.Exception_init_pdl1vj$;
   var clear = Kotlin.kotlin.dom.clear_asww5s$;
   var asList = Kotlin.org.w3c.dom.asList_kt9thq$;
@@ -48,7 +50,9 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
   var i = $module$kotlinx_html_js.kotlinx.html.i_5g1p9k$;
   var span = $module$kotlinx_html_js.kotlinx.html.span_6djfml$;
   var get_br = $module$kotlinx_html_js.kotlinx.html.get_br_6s7ubj$;
+  var IntRange = Kotlin.kotlin.ranges.IntRange;
   var Exception = Kotlin.kotlin.Exception;
+  var numberToInt = Kotlin.numberToInt;
   var ReadWriteProperty = Kotlin.kotlin.properties.ReadWriteProperty;
   var b = $module$kotlinx_html_js.kotlinx.html.b_r0mnq7$;
   AttributeEffectType.prototype = Object.create(Enum.prototype);
@@ -65,7 +69,6 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
     println('Starting gameLoop...');
     Game_getInstance().gameLoop();
   }
-  var ArrayList_init = Kotlin.kotlin.collections.ArrayList_init_287e2$;
   function Attribute(baseValue, type) {
     this.baseValue_0 = baseValue;
     this.type = type;
@@ -91,7 +94,6 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
       return this._value_0;
     }
   });
-  var Math_0 = Math;
   Attribute.prototype.calculateValue_0 = function () {
     var calcValue = {v: this.baseValue_0};
     var $receiver = this._attributeEffects_0;
@@ -282,8 +284,11 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
   function Game() {
     Game_instance = this;
     this.Hero = new Hero();
+    this.World = new World();
+    this.currentLocationId_0 = 1;
     this.Logger = new Logger('logContainer');
     this.CurrentMonster_mrunk1$_0 = this.CurrentMonster_mrunk1$_0;
+    this.monsterIsSpawned_0 = false;
     this.CurrentMonsterCard_kno87j$_0 = this.CurrentMonsterCard_kno87j$_0;
     this.lastAutoAttack_0 = 0.0;
     this.fps_0 = 30.0;
@@ -292,7 +297,9 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
     this.currentTime_0 = 0;
     this.deltaTime_0 = 0;
     this.DEBUG = false;
-    this.spawnMonster_0();
+    if (this.currentLocationId_0 !== 0) {
+      this.spawnMonster_0();
+    }
     this.refreshAttributeTable();
     this.initUpgradeButtons_0();
     this.fCount = 0;
@@ -338,7 +345,12 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
     }
     if (this.fCount % 30 === 0)
       this.scrollAutoScrollContainers_0();
-    this.handleAutoAttack_0();
+    if (!this.monsterIsSpawned_0 && this.currentLocationId_0 !== 0) {
+      this.spawnMonster_0();
+    }
+    if (this.monsterIsSpawned_0 && this.currentLocationId_0 !== 0) {
+      this.handleAutoAttack_0();
+    }
   };
   Game.prototype.refreshAttributeTable = function () {
     var tmp$;
@@ -453,6 +465,7 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
     this.CurrentMonsterCard_0 = this.createMonsterCard_0(this.CurrentMonster_0);
     var button = Kotlin.isType(tmp$ = document.getElementById('monsterAttackButton'), HTMLButtonElement) ? tmp$ : throwCCE();
     button.addEventListener('click', Game$spawnMonster$lambda(this));
+    this.monsterIsSpawned_0 = true;
   };
   Game.prototype.createMonsterCard_0 = function (monster) {
     var tmp$;
@@ -465,7 +478,7 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
     this.updateMonsterHealthBar_0(this.CurrentMonster_0);
     if (died) {
       this.destroyMonsterCard_0();
-      this.spawnMonster_0();
+      this.monsterIsSpawned_0 = false;
     }
   };
   Game.prototype.updateMonsterHealthBar_0 = function (monster) {
@@ -587,7 +600,7 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
   };
   function Mentor() {
     Mentor_instance = this;
-    this.upgrades = mapOf([to(1, new Upgrade(1, 2, 'Automatic Attacks', 'Teaches you to automatically attack.', Mentor$upgrades$lambda, 2, void 0, void 0, true)), to(2, new Upgrade(2, 10, 'Faster Attacks', 'Increases your attacks per second by 0.1.', Mentor$upgrades$lambda_0(this), void 0, 100))]);
+    this.upgrades = mapOf([to(1, new Upgrade(1, 2, 'Automatic Attacks', 'Teaches you to automatically attack.', Mentor$upgrades$lambda, 2, void 0, void 0, true)), to(2, new Upgrade(2, 10, 'Faster Attacks', 'Increases your attacks per second by 0.1.', Mentor$upgrades$lambda_0(this), void 0, 100)), to(3, new Upgrade(3, 1, 'Harder Hits', 'Increases your damage by 1.', Mentor$upgrades$lambda_1(this), void 0, 100, void 0, true))]);
   }
   Mentor.prototype.buyUpgrade_rsyqya$ = function (hero, id) {
     var tmp$;
@@ -627,6 +640,12 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
   function Mentor$upgrades$lambda_0(this$Mentor) {
     return function (it) {
       it.addAttributeEffect_l1uk5f$(AttributeType$APS_getInstance(), new AttributeEffect(this$Mentor, AttributeEffectType$INCREMENT_getInstance(), 0.1));
+      return Unit;
+    };
+  }
+  function Mentor$upgrades$lambda_1(this$Mentor) {
+    return function (it) {
+      it.addAttributeEffect_l1uk5f$(AttributeType$DMG_getInstance(), new AttributeEffect(this$Mentor, AttributeEffectType$INCREMENT_getInstance(), 1.0));
       return Unit;
     };
   }
@@ -767,21 +786,22 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
     simpleName: 'Monster',
     interfaces: []
   };
-  function World(locations) {
-    this.locations = locations;
-    this.locations = listOf(new Location('Meadows', 3, true));
+  function World() {
+    this.locations = listOf(new Location(1, 'Meadows', 10, 3, true));
   }
   World.$metadata$ = {
     kind: Kind_CLASS,
     simpleName: 'World',
     interfaces: []
   };
-  function Location(name, dungeons, known, dungeonsFound) {
+  function Location(id, name, level, dungeons, known, dungeonsFound) {
     if (known === void 0)
       known = false;
     if (dungeonsFound === void 0)
       dungeonsFound = 0;
+    this.id = id;
     this.name = name;
+    this.level = level;
     this.dungeons = dungeons;
     this.known = known;
     this.dungeonsFound = dungeonsFound;
@@ -792,33 +812,41 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
     interfaces: []
   };
   Location.prototype.component1 = function () {
-    return this.name;
+    return this.id;
   };
   Location.prototype.component2 = function () {
-    return this.dungeons;
+    return this.name;
   };
   Location.prototype.component3 = function () {
-    return this.known;
+    return this.level;
   };
   Location.prototype.component4 = function () {
+    return this.dungeons;
+  };
+  Location.prototype.component5 = function () {
+    return this.known;
+  };
+  Location.prototype.component6 = function () {
     return this.dungeonsFound;
   };
-  Location.prototype.copy_lgzhfb$ = function (name, dungeons, known, dungeonsFound) {
-    return new Location(name === void 0 ? this.name : name, dungeons === void 0 ? this.dungeons : dungeons, known === void 0 ? this.known : known, dungeonsFound === void 0 ? this.dungeonsFound : dungeonsFound);
+  Location.prototype.copy_9ebw11$ = function (id, name, level, dungeons, known, dungeonsFound) {
+    return new Location(id === void 0 ? this.id : id, name === void 0 ? this.name : name, level === void 0 ? this.level : level, dungeons === void 0 ? this.dungeons : dungeons, known === void 0 ? this.known : known, dungeonsFound === void 0 ? this.dungeonsFound : dungeonsFound);
   };
   Location.prototype.toString = function () {
-    return 'Location(name=' + Kotlin.toString(this.name) + (', dungeons=' + Kotlin.toString(this.dungeons)) + (', known=' + Kotlin.toString(this.known)) + (', dungeonsFound=' + Kotlin.toString(this.dungeonsFound)) + ')';
+    return 'Location(id=' + Kotlin.toString(this.id) + (', name=' + Kotlin.toString(this.name)) + (', level=' + Kotlin.toString(this.level)) + (', dungeons=' + Kotlin.toString(this.dungeons)) + (', known=' + Kotlin.toString(this.known)) + (', dungeonsFound=' + Kotlin.toString(this.dungeonsFound)) + ')';
   };
   Location.prototype.hashCode = function () {
     var result = 0;
+    result = result * 31 + Kotlin.hashCode(this.id) | 0;
     result = result * 31 + Kotlin.hashCode(this.name) | 0;
+    result = result * 31 + Kotlin.hashCode(this.level) | 0;
     result = result * 31 + Kotlin.hashCode(this.dungeons) | 0;
     result = result * 31 + Kotlin.hashCode(this.known) | 0;
     result = result * 31 + Kotlin.hashCode(this.dungeonsFound) | 0;
     return result;
   };
   Location.prototype.equals = function (other) {
-    return this === other || (other !== null && (typeof other === 'object' && (Object.getPrototypeOf(this) === Object.getPrototypeOf(other) && (Kotlin.equals(this.name, other.name) && Kotlin.equals(this.dungeons, other.dungeons) && Kotlin.equals(this.known, other.known) && Kotlin.equals(this.dungeonsFound, other.dungeonsFound)))));
+    return this === other || (other !== null && (typeof other === 'object' && (Object.getPrototypeOf(this) === Object.getPrototypeOf(other) && (Kotlin.equals(this.id, other.id) && Kotlin.equals(this.name, other.name) && Kotlin.equals(this.level, other.level) && Kotlin.equals(this.dungeons, other.dungeons) && Kotlin.equals(this.known, other.known) && Kotlin.equals(this.dungeonsFound, other.dungeonsFound)))));
   };
   function AttributeTableRowGenerator() {
     AttributeTableRowGenerator_instance = this;
@@ -1063,7 +1091,11 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
     MonsterGenerator_instance = this;
   }
   MonsterGenerator.prototype.generateMonster_za3lpa$ = function (level) {
-    return new Monster('Imp', level);
+    var b = level - 2 | 0;
+    var lower = Math_0.max(1, b);
+    var upper = level + 2 | 0;
+    var generatedLevel = random(new IntRange(lower, upper));
+    return new Monster('Imp', generatedLevel);
   };
   MonsterGenerator.$metadata$ = {
     kind: Kind_OBJECT,
@@ -1100,6 +1132,9 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
   }
   function format_0($receiver, digits) {
     return $receiver.format(digits);
+  }
+  function random($receiver) {
+    return numberToInt(Math.random() * ($receiver.endInclusive + 1 - $receiver.start | 0) + $receiver.start);
   }
   function IdFloatBinding(initialValue, id) {
     this.id = id;
@@ -1287,6 +1322,7 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
   package$util.AttributeNotFoundException = AttributeNotFoundException;
   package$util.format_j6vyb1$ = format;
   package$util.format_lcymw2$ = format_0;
+  package$util.random_9tsm8a$ = random;
   package$util.IdFloatBinding = IdFloatBinding;
   package$core.IdIntBinding = IdIntBinding;
   package$util.Logger = Logger;
