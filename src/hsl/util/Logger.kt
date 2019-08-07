@@ -13,8 +13,21 @@ class Logger(private val logContainerId: String) {
     private val container: Element = document.getElementById(logContainerId)
             ?: throw IdNotFoundException(logContainerId)
 
+    private var logCount = 0
+    private var maxLogCount = 20
+
     fun logMsg(msgType: MsgType, msg: String) {
-        val date = Date().toDateString()
+        logCount += 1
+
+        if(logCount >= maxLogCount) {
+            val first = container.firstChild
+            if(first != null) {
+                container.removeChild(first)
+            }
+
+            logCount -= 1
+        }
+
         val entry = document.create.div(classes = "row ${msgType.textColorClass}") {
             div(classes = "col-sm-3"){
                 b {

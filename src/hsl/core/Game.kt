@@ -94,7 +94,8 @@ object Game {
         }
 
         //every 30 frames, update autoScrollContainers
-        if(fCount%30 == 0) scrollAutoScrollContainers()
+        //disabled for now
+        //if(fCount%30 == 0) scrollAutoScrollContainers()
 
         if(!monsterIsSpawned && isAtLocation) {
             spawnMonster()
@@ -141,9 +142,10 @@ object Game {
 
     private fun createMonsterCard(monster: Monster): HTMLDivElement {
         val cardDiv = MonsterCardGenerator.generateMonsterCard(monster)
-
         document.getElementById("monsterCardContainer")?.append(cardDiv)
 
+        //todo remove autoclicker hack
+        cardDiv.getElementsByTagName("Button").asList().first().asDynamic().focus()
         return cardDiv
     }
 
@@ -227,7 +229,7 @@ object Game {
     }
 
 
-    private fun scrollAutoScrollContainers() {
+    /*private fun scrollAutoScrollContainers() {
         var scrollContainer = document.getElementsByClassName("auto-scroll")
 
         scrollContainer.asList().forEach {
@@ -237,7 +239,7 @@ object Game {
                 it.scrollTop = (it.scrollHeight - it.clientHeight).toDouble()
             }
         }
-    }
+    }*/
 
     private fun updateUpgradeButtons() {
         val masterTab = document.getElementById("master-tab") ?: return

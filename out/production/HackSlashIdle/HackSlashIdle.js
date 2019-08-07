@@ -21,10 +21,10 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
   var addClass = Kotlin.kotlin.dom.addClass_hhb33f$;
   var removeClass = Kotlin.kotlin.dom.removeClass_hhb33f$;
   var clear = Kotlin.kotlin.dom.clear_asww5s$;
-  var throwCCE = Kotlin.throwCCE;
-  var Exception_init = Kotlin.kotlin.Exception_init_pdl1vj$;
   var asList = Kotlin.org.w3c.dom.asList_kt9thq$;
   var first = Kotlin.kotlin.collections.first_2p1efm$;
+  var throwCCE = Kotlin.throwCCE;
+  var Exception_init = Kotlin.kotlin.Exception_init_pdl1vj$;
   var hasClass = Kotlin.kotlin.dom.hasClass_46n0ku$;
   var toInt = Kotlin.kotlin.text.toInt_pdl1vz$;
   var currentTimeMillis = $module$kotlinx_html_js.kotlinx.html.currentTimeMillis;
@@ -367,8 +367,6 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
       this.fCount = this.fCount + 1 | 0;
       this.updateUpgradeButtons_0();
     }
-    if (this.fCount % 30 === 0)
-      this.scrollAutoScrollContainers_0();
     if (!this.monsterIsSpawned_0 && this.isAtLocation_0) {
       this.spawnMonster_0();
     }
@@ -405,6 +403,7 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
     var tmp$;
     var cardDiv = MonsterCardGenerator_getInstance().generateMonsterCard_lm0ins$(monster);
     (tmp$ = document.getElementById('monsterCardContainer')) != null ? (tmp$.append(cardDiv), Unit) : null;
+    first(asList(cardDiv.getElementsByTagName('Button'))).focus();
     return cardDiv;
   };
   Game.prototype.handleMonsterAttack = function () {
@@ -484,18 +483,6 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
       container.append(upgradeContainer);
       button.addEventListener('click', Game$initUpgradeButtons$lambda(this, id, upgrade, upgradeContainer, button));
       upgrade.updatePriceTag();
-    }
-  };
-  Game.prototype.scrollAutoScrollContainers_0 = function () {
-    var scrollContainer = document.getElementsByClassName('auto-scroll');
-    var tmp$;
-    tmp$ = asList(scrollContainer).iterator();
-    while (tmp$.hasNext()) {
-      var element = tmp$.next();
-      var isScrolled = (element.scrollHeight - element.clientHeight | 0) > element.scrollTop + 50;
-      if (!isScrolled) {
-        element.scrollTop = element.scrollHeight - element.clientHeight | 0;
-      }
     }
   };
   Game.prototype.updateUpgradeButtons_0 = function () {
@@ -1334,6 +1321,8 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
       throw new IdNotFoundException(this.logContainerId_0);
     }
     this.container_0 = tmp$;
+    this.logCount_0 = 0;
+    this.maxLogCount_0 = 20;
   }
   function Logger$logMsg$lambda$lambda$lambda(closure$msgType) {
     return function ($receiver) {
@@ -1361,7 +1350,14 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
     };
   }
   Logger.prototype.logMsg_uzephu$ = function (msgType, msg) {
-    var date = (new Date()).toDateString();
+    this.logCount_0 = this.logCount_0 + 1 | 0;
+    if (this.logCount_0 >= this.maxLogCount_0) {
+      var first = this.container_0.firstChild;
+      if (first != null) {
+        this.container_0.removeChild(first);
+      }
+      this.logCount_0 = this.logCount_0 - 1 | 0;
+    }
     var entry = div_0(get_create(document), 'row ' + msgType.textColorClass, Logger$logMsg$lambda(msgType, msg));
     this.container_0.append(entry);
   };
