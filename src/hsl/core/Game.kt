@@ -1,13 +1,13 @@
 package hsl.core
 
-import hsl.core.mentor.Mentor
-import hsl.core.mentor.Upgrade
+import hsl.core.master.Master
+import hsl.core.master.Upgrade
 import hsl.core.world.World
 import hsl.generators.MonsterGenerator
-import hsl.generators.html.AttributeTableRowGenerator
-import hsl.generators.html.MonsterCardGenerator
-import hsl.generators.html.UpgradeButtonGenerator
+import hsl.generators.html.*
+import hsl.util.IdNotFoundException
 import hsl.util.Logger
+import hsl.util.MsgType
 import kotlinx.html.currentTimeMillis
 import org.w3c.dom.*
 import kotlin.browser.document
@@ -32,6 +32,16 @@ object Game {
     private var monsterIsSpawned = false
     private lateinit var CurrentMonsterCard: HTMLDivElement
 
+
+    //TODO move unlocks and other save related stuff to a serializable gamestate class
+    //region UNLOCKS
+    private var firstStart: Boolean = true
+    private var dungeonsUnlocked: Boolean = false
+    private var masterUnlocked: Boolean = false
+    //endregion
+
+    private var isAtLocation: Boolean = false
+
     private var lastAutoAttack = 0f
 
     //timing
@@ -44,12 +54,28 @@ object Game {
     const val DEBUG: Boolean = false
 
     init {
-        if(currentLocationId != 0) {
-            spawnMonster()
-        }
-
         refreshAttributeTable()
         initUpgradeButtons()
+        initLocationList()
+
+        if(firstStart) {
+            //hide attributeView
+            //hide mainView
+            //hide logView
+            //show introView
+
+            goToLocation(1)
+        }
+    }
+
+    private fun initLocationList() {
+        val locationList = document.getElementById("locationList") ?: throw IdNotFoundException("locationList")
+
+        Game.World.getLocations().forEach {
+            locationList.append(
+                LocationListElementGenerator.generateElement(it)
+            )
+        }
     }
 
     var fCount = 0
@@ -70,12 +96,101 @@ object Game {
         //every 30 frames, update autoScrollContainers
         if(fCount%30 == 0) scrollAutoScrollContainers()
 
-        if(!monsterIsSpawned && currentLocationId != 0) {
+        if(!monsterIsSpawned && isAtLocation) {
             spawnMonster()
         }
 
-        if(monsterIsSpawned && currentLocationId != 0) {
+        if(monsterIsSpawned && isAtLocation) {
             handleAutoAttack()
+        }
+
+        checkUnlocks()
+    }
+
+    fun goToLocation(locationId: Int) {
+        document.getElementById("locationSelectionContainer")?.addClass("d-none")
+
+        val locationContainer = document.getElementById("locationContainer")
+        val locationElement = LocationElementGenerator.generateElement(World.getLocationById(locationId))
+
+        locationContainer?.removeClass("d-none")
+        locationContainer?.append(locationElement)
+
+        isAtLocation = true
+    }
+
+    fun leaveCurrentLocation() {
+        document.getElementById("locationSelectionContainer")?.removeClass("d-none")
+        val locationContainer = document.getElementById("locationContainer")
+        locationContainer?.addClass("d-none")
+        locationContainer?.clear()
+
+        despawnMonster()
+
+        currentLocationId = 0
+        isAtLocation = false
+    }
+
+    //region MONSTER
+
+    private fun spawnMonster() {
+        CurrentMonster = MonsterGenerator.generateMonster(1)
+        CurrentMonsterCard = createMonsterCard(CurrentMonster)
+        monsterIsSpawned = true;
+    }
+
+    private fun createMonsterCard(monster: Monster): HTMLDivElement {
+        val cardDiv = MonsterCardGenerator.generateMonsterCard(monster)
+
+        document.getElementById("monsterCardContainer")?.append(cardDiv)
+
+        return cardDiv
+    }
+
+    fun handleMonsterAttack() {
+        val died = Hero.attack(CurrentMonster)
+
+        updateMonsterHealthBar(CurrentMonster)
+
+        if(died) {
+            destroyMonsterCard()
+            monsterIsSpawned = false;
+        }
+    }
+
+    private fun updateMonsterHealthBar(monster: Monster) {
+        var bar = document.getElementById("monsterHealthBar") as HTMLDivElement
+
+        var hpPercent = (monster.currentHealth / monster.maxHealth) * 100
+        var str = "$hpPercent%"
+        bar.style.width = str
+    }
+
+    private fun destroyMonsterCard() {
+        CurrentMonsterCard.parentNode?.clear()
+    }
+
+
+    private fun despawnMonster() {
+        destroyMonsterCard()
+        monsterIsSpawned = false;
+    }
+
+
+    //endregion
+
+    private fun checkUnlocks() {
+        //master
+        if(Hero.Xp >= 10 && !masterUnlocked) {
+            document.getElementById("masterTabContainer")?.removeClass("d-none")
+            Logger.logMsg(MsgType.EVENT, "Yay! From now on I have to be on call for teaching you skills and stuff... k thx.")
+
+            masterUnlocked = true;
+        }
+
+        //dungeons
+        if(Hero.Level >= 10 && !dungeonsUnlocked) {
+            dungeonsUnlocked = true
         }
     }
 
@@ -95,7 +210,7 @@ object Game {
     private fun initUpgradeButtons() {
         val container = document.getElementById("upgradeButtonsContainer") ?: return
 
-        for (kvp in Mentor.upgrades) {
+        for (kvp in Master.upgrades) {
             val id = kvp.key
             val upgrade = kvp.value
             val upgradeContainer = UpgradeButtonGenerator.generateUpgradeButton(upgrade)
@@ -103,7 +218,7 @@ object Game {
             container.append(upgradeContainer)
 
             button.addEventListener("click", {
-                Mentor.buyUpgrade(Hero, id)
+                Master.buyUpgrade(Hero, id)
                 updateUpgradeButton(upgrade, upgradeContainer, button as HTMLButtonElement)
             })
 
@@ -134,7 +249,7 @@ object Game {
         container.getElementsByClassName("btn-group").asList().forEach {
             var button = it.getElementsByClassName("upgrade-button").asList().first()
             var id = button.getAttribute("upgrade-id") ?: return
-            var upgrade = Mentor.upgrades[id.toInt()] ?: return
+            var upgrade = Master.upgrades[id.toInt()] ?: return
 
             if(upgrade.gradesBought >= upgrade.grades || upgrade.calculatePrice() > Hero.Xp) {
                 button.setAttribute("disabled", "disabled")
@@ -150,46 +265,6 @@ object Game {
         }
     }
 
-    private fun spawnMonster() {
-        CurrentMonster = MonsterGenerator.generateMonster(1)
-        CurrentMonsterCard = createMonsterCard(CurrentMonster)
-
-        val button = document.getElementById("monsterAttackButton") as HTMLButtonElement
-        button.addEventListener("click", { handleMonsterAttack() })
-
-        monsterIsSpawned = true;
-    }
-
-    private fun createMonsterCard(monster: Monster): HTMLDivElement {
-        val cardDiv = MonsterCardGenerator.generateMonsterCard(monster)
-
-        document.getElementById("monsterCardContainer")?.append(cardDiv)
-
-        return cardDiv
-    }
-
-    private fun handleMonsterAttack() {
-        val died = Hero.attack(CurrentMonster)
-
-        updateMonsterHealthBar(CurrentMonster)
-
-        if(died) {
-            destroyMonsterCard()
-            monsterIsSpawned = false;
-        }
-    }
-
-    private fun updateMonsterHealthBar(monster: Monster) {
-        var bar = document.getElementById("monsterHealthBar") as HTMLDivElement
-
-        var hpPercent = (monster.currentHealth / monster.maxHealth) * 100
-        var str = hpPercent.toString() + "%"
-        bar.style.width = str
-    }
-
-    private fun destroyMonsterCard() {
-        CurrentMonsterCard.parentNode?.clear()
-    }
 
     private fun handleAutoAttack() {
         val aps = Hero.Attributes[AttributeType.APS]?.value ?: 0f

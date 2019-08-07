@@ -1,9 +1,11 @@
 package hsl.generators.html
 
+import hsl.core.Game
 import hsl.core.Monster
 import kotlinx.html.*
 import kotlinx.html.dom.create
 import kotlinx.html.js.div
+import kotlinx.html.js.onClickFunction
 import org.w3c.dom.HTMLDivElement
 import kotlin.browser.document
 
@@ -37,6 +39,10 @@ object MonsterCardGenerator {
                 button (classes = "btn btn-danger") {
                     type = ButtonType.button
                     id = "monsterAttackButton"
+
+                    onClickFunction = {
+                        Game.handleMonsterAttack()
+                    }
 
                     + "Attack"
                 }

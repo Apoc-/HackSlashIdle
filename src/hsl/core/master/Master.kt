@@ -1,9 +1,9 @@
-package hsl.core.mentor
+package hsl.core.master
 
 import hsl.core.*
 import hsl.util.MsgType
 
-object Mentor : AttributeEffectSource {
+object Master : AttributeEffectSource {
     val upgrades: Map<Int, Upgrade> = mapOf(
             (1 to Upgrade(
                     id = 1,

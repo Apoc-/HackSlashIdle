@@ -1,8 +1,6 @@
 package hsl.generators.html
 
-import hsl.core.Game
-import hsl.core.mentor.Mentor
-import hsl.core.mentor.Upgrade
+import hsl.core.master.Upgrade
 import kotlinx.html.dom.create
 import kotlinx.html.*
 import org.w3c.dom.HTMLElement
