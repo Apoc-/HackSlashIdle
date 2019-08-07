@@ -17,6 +17,7 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
   var ArrayList_init = Kotlin.kotlin.collections.ArrayList_init_287e2$;
   var Math_0 = Math;
   var throwUPAE = Kotlin.throwUPAE;
+  var listOf = Kotlin.kotlin.collections.listOf_i5x0yv$;
   var Unit = Kotlin.kotlin.Unit;
   var addClass = Kotlin.kotlin.dom.addClass_hhb33f$;
   var removeClass = Kotlin.kotlin.dom.removeClass_hhb33f$;
@@ -62,6 +63,8 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
   AttributeEffectType.prototype.constructor = AttributeEffectType;
   AttributeType.prototype = Object.create(Enum.prototype);
   AttributeType.prototype.constructor = AttributeType;
+  GameView.prototype = Object.create(Enum.prototype);
+  GameView.prototype.constructor = GameView;
   IdNotFoundException.prototype = Object.create(Exception.prototype);
   IdNotFoundException.prototype.constructor = IdNotFoundException;
   AttributeNotFoundException.prototype = Object.create(Exception.prototype);
@@ -299,6 +302,7 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
     this.dungeonsUnlocked_0 = false;
     this.masterUnlocked_0 = false;
     this.isAtLocation_0 = false;
+    this.currentTab_0 = 'world-tab';
     this.lastAutoAttack_0 = 0.0;
     this.fps_0 = 30.0;
     this.interval_0 = 1000.0 / this.fps_0;
@@ -309,6 +313,7 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
     this.refreshAttributeTable();
     this.initUpgradeButtons_0();
     this.initLocationList_0();
+    this.initGameTabs_0();
     if (this.firstStart_0) {
       this.goToLocation_za3lpa$(1);
     }
@@ -339,6 +344,27 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
       this.CurrentMonsterCard_kno87j$_0 = CurrentMonsterCard;
     }
   });
+  function Game$initGameTabs$lambda$lambda(closure$tab, this$Game) {
+    return function (it) {
+      this$Game.handleTabChange_0(closure$tab.id);
+      return Unit;
+    };
+  }
+  Game.prototype.initGameTabs_0 = function () {
+    var tabs = listOf(['world-tab', 'master-tab', 'inventory-tab', 'town-tab']);
+    var tmp$;
+    tmp$ = tabs.iterator();
+    while (tmp$.hasNext()) {
+      var element = tmp$.next();
+      var tab = document.getElementById(element);
+      tab != null ? (tab.addEventListener('click', Game$initGameTabs$lambda$lambda(tab, this)), Unit) : null;
+    }
+  };
+  Game.prototype.handleTabChange_0 = function (tabId) {
+    this.currentTab_0 = tabId;
+    if (equals(this.currentTab_0, 'master-tab'))
+      this.despawnMonster_0();
+  };
   Game.prototype.initLocationList_0 = function () {
     var tmp$;
     tmp$ = document.getElementById('locationList');
@@ -367,7 +393,7 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
       this.fCount = this.fCount + 1 | 0;
       this.updateUpgradeButtons_0();
     }
-    if (!this.monsterIsSpawned_0 && this.isAtLocation_0) {
+    if (!this.monsterIsSpawned_0 && this.isAtLocation_0 && equals(this.currentTab_0, 'world-tab')) {
       this.spawnMonster_0();
     }
     if (this.monsterIsSpawned_0 && this.isAtLocation_0) {
@@ -559,6 +585,46 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
     }
     return Game_instance;
   }
+  function GameView(name, ordinal) {
+    Enum.call(this);
+    this.name$ = name;
+    this.ordinal$ = ordinal;
+  }
+  function GameView_initFields() {
+    GameView_initFields = function () {
+    };
+    GameView$WORLD_instance = new GameView('WORLD', 0);
+    GameView$MENTOR_instance = new GameView('MENTOR', 1);
+  }
+  var GameView$WORLD_instance;
+  function GameView$WORLD_getInstance() {
+    GameView_initFields();
+    return GameView$WORLD_instance;
+  }
+  var GameView$MENTOR_instance;
+  function GameView$MENTOR_getInstance() {
+    GameView_initFields();
+    return GameView$MENTOR_instance;
+  }
+  GameView.$metadata$ = {
+    kind: Kind_CLASS,
+    simpleName: 'GameView',
+    interfaces: [Enum]
+  };
+  function GameView$values() {
+    return [GameView$WORLD_getInstance(), GameView$MENTOR_getInstance()];
+  }
+  GameView.values = GameView$values;
+  function GameView$valueOf(name) {
+    switch (name) {
+      case 'WORLD':
+        return GameView$WORLD_getInstance();
+      case 'MENTOR':
+        return GameView$MENTOR_getInstance();
+      default:throwISE('No enum constant hsl.core.GameView.' + name);
+    }
+  }
+  GameView.valueOf_61zpoe$ = GameView$valueOf;
   function Hero() {
     this.Level_xpggig$_0 = new IdIntBinding(1, 'heroLevel');
     this.Gold_cm5py0$_0 = new IdIntBinding(0, 'heroGold');
@@ -824,7 +890,7 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
     interfaces: []
   };
   function World() {
-    this.locations_0 = mapOf_0(to(1, new Location(1, 'Meadows', to(1, 10), 3, true)));
+    this.locations_0 = mapOf_0(to(1, new Location(1, 'Meadows', 'Lush green fields, ', to(1, 10), 3, true)));
   }
   World.prototype.getLocationById_za3lpa$ = function (id) {
     var tmp$;
@@ -842,13 +908,14 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
     simpleName: 'World',
     interfaces: []
   };
-  function Location(id, name, level, dungeons, known, dungeonsFound) {
+  function Location(id, name, description, level, dungeons, known, dungeonsFound) {
     if (known === void 0)
       known = false;
     if (dungeonsFound === void 0)
       dungeonsFound = 0;
     this.id = id;
     this.name = name;
+    this.description = description;
     this.level = level;
     this.dungeons = dungeons;
     this.known = known;
@@ -866,27 +933,31 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
     return this.name;
   };
   Location.prototype.component3 = function () {
-    return this.level;
+    return this.description;
   };
   Location.prototype.component4 = function () {
-    return this.dungeons;
+    return this.level;
   };
   Location.prototype.component5 = function () {
-    return this.known;
+    return this.dungeons;
   };
   Location.prototype.component6 = function () {
+    return this.known;
+  };
+  Location.prototype.component7 = function () {
     return this.dungeonsFound;
   };
-  Location.prototype.copy_ene45k$ = function (id, name, level, dungeons, known, dungeonsFound) {
-    return new Location(id === void 0 ? this.id : id, name === void 0 ? this.name : name, level === void 0 ? this.level : level, dungeons === void 0 ? this.dungeons : dungeons, known === void 0 ? this.known : known, dungeonsFound === void 0 ? this.dungeonsFound : dungeonsFound);
+  Location.prototype.copy_xpaia2$ = function (id, name, description, level, dungeons, known, dungeonsFound) {
+    return new Location(id === void 0 ? this.id : id, name === void 0 ? this.name : name, description === void 0 ? this.description : description, level === void 0 ? this.level : level, dungeons === void 0 ? this.dungeons : dungeons, known === void 0 ? this.known : known, dungeonsFound === void 0 ? this.dungeonsFound : dungeonsFound);
   };
   Location.prototype.toString = function () {
-    return 'Location(id=' + Kotlin.toString(this.id) + (', name=' + Kotlin.toString(this.name)) + (', level=' + Kotlin.toString(this.level)) + (', dungeons=' + Kotlin.toString(this.dungeons)) + (', known=' + Kotlin.toString(this.known)) + (', dungeonsFound=' + Kotlin.toString(this.dungeonsFound)) + ')';
+    return 'Location(id=' + Kotlin.toString(this.id) + (', name=' + Kotlin.toString(this.name)) + (', description=' + Kotlin.toString(this.description)) + (', level=' + Kotlin.toString(this.level)) + (', dungeons=' + Kotlin.toString(this.dungeons)) + (', known=' + Kotlin.toString(this.known)) + (', dungeonsFound=' + Kotlin.toString(this.dungeonsFound)) + ')';
   };
   Location.prototype.hashCode = function () {
     var result = 0;
     result = result * 31 + Kotlin.hashCode(this.id) | 0;
     result = result * 31 + Kotlin.hashCode(this.name) | 0;
+    result = result * 31 + Kotlin.hashCode(this.description) | 0;
     result = result * 31 + Kotlin.hashCode(this.level) | 0;
     result = result * 31 + Kotlin.hashCode(this.dungeons) | 0;
     result = result * 31 + Kotlin.hashCode(this.known) | 0;
@@ -894,7 +965,7 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
     return result;
   };
   Location.prototype.equals = function (other) {
-    return this === other || (other !== null && (typeof other === 'object' && (Object.getPrototypeOf(this) === Object.getPrototypeOf(other) && (Kotlin.equals(this.id, other.id) && Kotlin.equals(this.name, other.name) && Kotlin.equals(this.level, other.level) && Kotlin.equals(this.dungeons, other.dungeons) && Kotlin.equals(this.known, other.known) && Kotlin.equals(this.dungeonsFound, other.dungeonsFound)))));
+    return this === other || (other !== null && (typeof other === 'object' && (Object.getPrototypeOf(this) === Object.getPrototypeOf(other) && (Kotlin.equals(this.id, other.id) && Kotlin.equals(this.name, other.name) && Kotlin.equals(this.description, other.description) && Kotlin.equals(this.level, other.level) && Kotlin.equals(this.dungeons, other.dungeons) && Kotlin.equals(this.known, other.known) && Kotlin.equals(this.dungeonsFound, other.dungeonsFound)))));
   };
   function AttributeTableRowGenerator() {
     AttributeTableRowGenerator_instance = this;
@@ -1439,6 +1510,13 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
   Object.defineProperty(package$core, 'Game', {
     get: Game_getInstance
   });
+  Object.defineProperty(GameView, 'WORLD', {
+    get: GameView$WORLD_getInstance
+  });
+  Object.defineProperty(GameView, 'MENTOR', {
+    get: GameView$MENTOR_getInstance
+  });
+  package$core.GameView = GameView;
   package$core.Hero = Hero;
   var package$master = package$core.master || (package$core.master = {});
   Object.defineProperty(package$master, 'Master', {

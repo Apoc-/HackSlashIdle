@@ -41,6 +41,7 @@ object Game {
     //endregion
 
     private var isAtLocation: Boolean = false
+    private var currentTab: String = "world-tab"
 
     private var lastAutoAttack = 0f
 
@@ -57,6 +58,7 @@ object Game {
         refreshAttributeTable()
         initUpgradeButtons()
         initLocationList()
+        initGameTabs()
 
         if(firstStart) {
             //hide attributeView
@@ -65,6 +67,25 @@ object Game {
             //show introView
 
             goToLocation(1)
+        }
+    }
+
+    private fun initGameTabs() {
+        var tabs = listOf("world-tab", "master-tab", "inventory-tab", "town-tab")
+
+        tabs.forEach {
+            val tab = document.getElementById(it)
+            tab?.addEventListener("click", { handleTabChange(tab.id) })
+        }
+    }
+
+    private fun handleTabChange(tabId: String) {
+        currentTab = tabId
+
+        when(currentTab) {
+            "master-tab" -> {
+                despawnMonster()
+            }
         }
     }
 
@@ -97,7 +118,7 @@ object Game {
         //disabled for now
         //if(fCount%30 == 0) scrollAutoScrollContainers()
 
-        if(!monsterIsSpawned && isAtLocation) {
+        if(!monsterIsSpawned && isAtLocation && currentTab == "world-tab") {
             spawnMonster()
         }
 
