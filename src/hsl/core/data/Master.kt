@@ -1,4 +1,4 @@
-package hsl.core.master
+package hsl.core.data
 
 import hsl.core.*
 import hsl.util.MsgType

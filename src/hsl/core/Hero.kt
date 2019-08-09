@@ -32,7 +32,6 @@ class Hero : AttributeEffectSource {
     fun addAttribute(baseValue: Float, type: AttributeType) {
         val attr = Attribute(baseValue, type)
         if(Attributes[type] != null) {
-            println("AttributeType $type already known.")
             return
         }
 
@@ -47,8 +46,6 @@ class Hero : AttributeEffectSource {
     }
 
     fun recalculateAttributes() {
-        println("Recalculating Attributes")
-
         Attributes.values.forEach {
             it.recalculateValue()
         }

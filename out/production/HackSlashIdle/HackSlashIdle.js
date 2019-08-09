@@ -16,24 +16,25 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
   var Kind_INTERFACE = Kotlin.Kind.INTERFACE;
   var ArrayList_init = Kotlin.kotlin.collections.ArrayList_init_287e2$;
   var Math_0 = Math;
-  var throwUPAE = Kotlin.throwUPAE;
-  var listOf = Kotlin.kotlin.collections.listOf_i5x0yv$;
   var Unit = Kotlin.kotlin.Unit;
-  var addClass = Kotlin.kotlin.dom.addClass_hhb33f$;
+  var to = Kotlin.kotlin.to_ujzrz7$;
+  var mapOf = Kotlin.kotlin.collections.mapOf_qfcya0$;
+  var Kind_OBJECT = Kotlin.Kind.OBJECT;
+  var mapOf_0 = Kotlin.kotlin.collections.mapOf_x2b85n$;
   var removeClass = Kotlin.kotlin.dom.removeClass_hhb33f$;
+  var Exception_init = Kotlin.kotlin.Exception_init_pdl1vj$;
   var clear = Kotlin.kotlin.dom.clear_asww5s$;
+  var listOf = Kotlin.kotlin.collections.listOf_i5x0yv$;
   var asList = Kotlin.org.w3c.dom.asList_kt9thq$;
   var first = Kotlin.kotlin.collections.first_2p1efm$;
   var throwCCE = Kotlin.throwCCE;
-  var Exception_init = Kotlin.kotlin.Exception_init_pdl1vj$;
   var hasClass = Kotlin.kotlin.dom.hasClass_46n0ku$;
   var toInt = Kotlin.kotlin.text.toInt_pdl1vz$;
+  var addClass = Kotlin.kotlin.dom.addClass_hhb33f$;
+  var throwUPAE = Kotlin.throwUPAE;
   var currentTimeMillis = $module$kotlinx_html_js.kotlinx.html.currentTimeMillis;
-  var Kind_OBJECT = Kotlin.Kind.OBJECT;
-  var to = Kotlin.kotlin.to_ujzrz7$;
+  var getCallableRef = Kotlin.getCallableRef;
   var mutableMapOf = Kotlin.kotlin.collections.mutableMapOf_qfcya0$;
-  var mapOf = Kotlin.kotlin.collections.mapOf_qfcya0$;
-  var mapOf_0 = Kotlin.kotlin.collections.mapOf_x2b85n$;
   var get_create = $module$kotlinx_html_js.kotlinx.html.dom.get_create_4wc2mh$;
   var td = $module$kotlinx_html_js.kotlinx.html.td_vlzo05$;
   var set_id = $module$kotlinx_html_js.kotlinx.html.set_id_ueiko3$;
@@ -63,8 +64,10 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
   AttributeEffectType.prototype.constructor = AttributeEffectType;
   AttributeType.prototype = Object.create(Enum.prototype);
   AttributeType.prototype.constructor = AttributeType;
-  GameView.prototype = Object.create(Enum.prototype);
-  GameView.prototype.constructor = GameView;
+  MasterGameView.prototype = Object.create(AbstractGameView.prototype);
+  MasterGameView.prototype.constructor = MasterGameView;
+  WorldGameView.prototype = Object.create(AbstractGameView.prototype);
+  WorldGameView.prototype.constructor = WorldGameView;
   IdNotFoundException.prototype = Object.create(Exception.prototype);
   IdNotFoundException.prototype.constructor = IdNotFoundException;
   AttributeNotFoundException.prototype = Object.create(Exception.prototype);
@@ -289,418 +292,6 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
     }
   }
   AttributeType.valueOf_61zpoe$ = AttributeType$valueOf;
-  function Game() {
-    Game_instance = this;
-    this.Hero = new Hero();
-    this.World = new World();
-    this.currentLocationId_0 = 1;
-    this.Logger = new Logger('logContainer');
-    this.CurrentMonster_mrunk1$_0 = this.CurrentMonster_mrunk1$_0;
-    this.monsterIsSpawned_0 = false;
-    this.CurrentMonsterCard_kno87j$_0 = this.CurrentMonsterCard_kno87j$_0;
-    this.firstStart_0 = true;
-    this.dungeonsUnlocked_0 = false;
-    this.masterUnlocked_0 = false;
-    this.isAtLocation_0 = false;
-    this.currentTab_0 = 'world-tab';
-    this.lastAutoAttack_0 = 0.0;
-    this.fps_0 = 30.0;
-    this.interval_0 = 1000.0 / this.fps_0;
-    this.lastTime_0 = (new Date()).getMilliseconds();
-    this.currentTime_0 = 0;
-    this.deltaTime_0 = 0;
-    this.DEBUG = false;
-    this.refreshAttributeTable();
-    this.initUpgradeButtons_0();
-    this.initLocationList_0();
-    this.initGameTabs_0();
-    if (this.firstStart_0) {
-      this.goToLocation_za3lpa$(1);
-    }
-    this.fCount = 0;
-  }
-  Game.prototype.addXp = function () {
-    var tmp$;
-    tmp$ = this.Hero;
-    tmp$.Xp = tmp$.Xp + 1000 | 0;
-  };
-  Object.defineProperty(Game.prototype, 'CurrentMonster_0', {
-    get: function () {
-      if (this.CurrentMonster_mrunk1$_0 == null)
-        return throwUPAE('CurrentMonster');
-      return this.CurrentMonster_mrunk1$_0;
-    },
-    set: function (CurrentMonster) {
-      this.CurrentMonster_mrunk1$_0 = CurrentMonster;
-    }
-  });
-  Object.defineProperty(Game.prototype, 'CurrentMonsterCard_0', {
-    get: function () {
-      if (this.CurrentMonsterCard_kno87j$_0 == null)
-        return throwUPAE('CurrentMonsterCard');
-      return this.CurrentMonsterCard_kno87j$_0;
-    },
-    set: function (CurrentMonsterCard) {
-      this.CurrentMonsterCard_kno87j$_0 = CurrentMonsterCard;
-    }
-  });
-  function Game$initGameTabs$lambda$lambda(closure$tab, this$Game) {
-    return function (it) {
-      this$Game.handleTabChange_0(closure$tab.id);
-      return Unit;
-    };
-  }
-  Game.prototype.initGameTabs_0 = function () {
-    var tabs = listOf(['world-tab', 'master-tab', 'inventory-tab', 'town-tab']);
-    var tmp$;
-    tmp$ = tabs.iterator();
-    while (tmp$.hasNext()) {
-      var element = tmp$.next();
-      var tab = document.getElementById(element);
-      tab != null ? (tab.addEventListener('click', Game$initGameTabs$lambda$lambda(tab, this)), Unit) : null;
-    }
-  };
-  Game.prototype.handleTabChange_0 = function (tabId) {
-    this.currentTab_0 = tabId;
-    if (equals(this.currentTab_0, 'master-tab'))
-      this.despawnMonster_0();
-  };
-  Game.prototype.initLocationList_0 = function () {
-    var tmp$;
-    tmp$ = document.getElementById('locationList');
-    if (tmp$ == null) {
-      throw new IdNotFoundException('locationList');
-    }
-    var locationList = tmp$;
-    var tmp$_0;
-    tmp$_0 = Game_getInstance().World.getLocations().iterator();
-    while (tmp$_0.hasNext()) {
-      var element = tmp$_0.next();
-      locationList.append(LocationListElementGenerator_getInstance().generateElement_yw5djh$(element));
-    }
-  };
-  function Game$gameLoop$lambda(this$Game) {
-    return function (it) {
-      this$Game.gameLoop();
-      return Unit;
-    };
-  }
-  Game.prototype.gameLoop = function () {
-    window.requestAnimationFrame(Game$gameLoop$lambda(this));
-    this.currentTime_0 = (new Date()).getMilliseconds();
-    this.deltaTime_0 = this.currentTime_0 - this.lastTime_0 | 0;
-    if (this.deltaTime_0 > this.interval_0) {
-      this.fCount = this.fCount + 1 | 0;
-      this.updateUpgradeButtons_0();
-    }
-    if (!this.monsterIsSpawned_0 && this.isAtLocation_0 && equals(this.currentTab_0, 'world-tab')) {
-      this.spawnMonster_0();
-    }
-    if (this.monsterIsSpawned_0 && this.isAtLocation_0) {
-      this.handleAutoAttack_0();
-    }
-    this.checkUnlocks_0();
-  };
-  Game.prototype.goToLocation_za3lpa$ = function (locationId) {
-    var tmp$;
-    (tmp$ = document.getElementById('locationSelectionContainer')) != null ? addClass(tmp$, ['d-none']) : null;
-    var locationContainer = document.getElementById('locationContainer');
-    var locationElement = LocationElementGenerator_getInstance().generateElement_yw5djh$(this.World.getLocationById_za3lpa$(locationId));
-    locationContainer != null ? removeClass(locationContainer, ['d-none']) : null;
-    locationContainer != null ? (locationContainer.append(locationElement), Unit) : null;
-    this.isAtLocation_0 = true;
-  };
-  Game.prototype.leaveCurrentLocation = function () {
-    var tmp$;
-    (tmp$ = document.getElementById('locationSelectionContainer')) != null ? removeClass(tmp$, ['d-none']) : null;
-    var locationContainer = document.getElementById('locationContainer');
-    locationContainer != null ? addClass(locationContainer, ['d-none']) : null;
-    locationContainer != null ? (clear(locationContainer), Unit) : null;
-    this.despawnMonster_0();
-    this.currentLocationId_0 = 0;
-    this.isAtLocation_0 = false;
-  };
-  Game.prototype.spawnMonster_0 = function () {
-    this.CurrentMonster_0 = MonsterGenerator_getInstance().generateMonster_za3lpa$(1);
-    this.CurrentMonsterCard_0 = this.createMonsterCard_0(this.CurrentMonster_0);
-    this.monsterIsSpawned_0 = true;
-  };
-  Game.prototype.createMonsterCard_0 = function (monster) {
-    var tmp$;
-    var cardDiv = MonsterCardGenerator_getInstance().generateMonsterCard_lm0ins$(monster);
-    (tmp$ = document.getElementById('monsterCardContainer')) != null ? (tmp$.append(cardDiv), Unit) : null;
-    first(asList(cardDiv.getElementsByTagName('Button'))).focus();
-    return cardDiv;
-  };
-  Game.prototype.handleMonsterAttack = function () {
-    var died = this.Hero.attack_lm0ins$(this.CurrentMonster_0);
-    this.updateMonsterHealthBar_0(this.CurrentMonster_0);
-    if (died) {
-      this.destroyMonsterCard_0();
-      this.monsterIsSpawned_0 = false;
-    }
-  };
-  Game.prototype.updateMonsterHealthBar_0 = function (monster) {
-    var tmp$;
-    var bar = Kotlin.isType(tmp$ = document.getElementById('monsterHealthBar'), HTMLDivElement) ? tmp$ : throwCCE();
-    var hpPercent = monster.currentHealth / monster.maxHealth * 100;
-    var str = hpPercent.toString() + '%';
-    bar.style.width = str;
-  };
-  Game.prototype.destroyMonsterCard_0 = function () {
-    var tmp$;
-    (tmp$ = this.CurrentMonsterCard_0.parentNode) != null ? (clear(tmp$), Unit) : null;
-  };
-  Game.prototype.despawnMonster_0 = function () {
-    this.destroyMonsterCard_0();
-    this.monsterIsSpawned_0 = false;
-  };
-  Game.prototype.checkUnlocks_0 = function () {
-    var tmp$;
-    if (this.Hero.Xp >= 10 && !this.masterUnlocked_0) {
-      (tmp$ = document.getElementById('masterTabContainer')) != null ? removeClass(tmp$, ['d-none']) : null;
-      this.Logger.logMsg_uzephu$(MsgType$EVENT_getInstance(), 'Yay! From now on I have to be on call for teaching you skills and stuff... k thx.');
-      this.masterUnlocked_0 = true;
-    }
-    if (this.Hero.Level >= 10 && !this.dungeonsUnlocked_0) {
-      this.dungeonsUnlocked_0 = true;
-    }
-  };
-  Game.prototype.refreshAttributeTable = function () {
-    var tmp$;
-    tmp$ = document.getElementById('attributeTableBody');
-    if (tmp$ == null) {
-      throw Exception_init('id: attributeTableBody not found');
-    }
-    var attributeTable = tmp$;
-    clear(attributeTable);
-    var tmp$_0;
-    tmp$_0 = this.Hero.Attributes.values.iterator();
-    while (tmp$_0.hasNext()) {
-      var element = tmp$_0.next();
-      var attrRow = AttributeTableRowGenerator_getInstance().generateAttributeTableRow_led6iu$(element);
-      attributeTable.append(attrRow);
-    }
-    this.Hero.recalculateAttributes();
-  };
-  function Game$initUpgradeButtons$lambda(this$Game, closure$id, closure$upgrade, closure$upgradeContainer, closure$button) {
-    return function (it) {
-      var tmp$, tmp$_0;
-      Master_getInstance().buyUpgrade_rsyqya$(this$Game.Hero, closure$id);
-      tmp$_0 = Kotlin.isType(tmp$ = closure$button, HTMLButtonElement) ? tmp$ : throwCCE();
-      this$Game.updateUpgradeButton_cmzi4w$(closure$upgrade, closure$upgradeContainer, tmp$_0);
-      return Unit;
-    };
-  }
-  Game.prototype.initUpgradeButtons_0 = function () {
-    var tmp$, tmp$_0;
-    tmp$ = document.getElementById('upgradeButtonsContainer');
-    if (tmp$ == null) {
-      return;
-    }
-    var container = tmp$;
-    tmp$_0 = Master_getInstance().upgrades.entries.iterator();
-    while (tmp$_0.hasNext()) {
-      var kvp = tmp$_0.next();
-      var id = kvp.key;
-      var upgrade = kvp.value;
-      var upgradeContainer = UpgradeButtonGenerator_getInstance().generateUpgradeButton_ejzugi$(upgrade);
-      var button = first(asList(upgradeContainer.getElementsByClassName('upgrade-button')));
-      container.append(upgradeContainer);
-      button.addEventListener('click', Game$initUpgradeButtons$lambda(this, id, upgrade, upgradeContainer, button));
-      upgrade.updatePriceTag();
-    }
-  };
-  Game.prototype.updateUpgradeButtons_0 = function () {
-    var tmp$, tmp$_0;
-    tmp$ = document.getElementById('master-tab');
-    if (tmp$ == null) {
-      return;
-    }
-    var masterTab = tmp$;
-    if (!hasClass(masterTab, 'active'))
-      return;
-    tmp$_0 = document.getElementById('upgradeButtonsContainer');
-    if (tmp$_0 == null) {
-      return;
-    }
-    var container = tmp$_0;
-    var tmp$_1;
-    tmp$_1 = asList(container.getElementsByClassName('btn-group')).iterator();
-    while (tmp$_1.hasNext()) {
-      var element = tmp$_1.next();
-      var tmp$_2, tmp$_3;
-      var button = first(asList(element.getElementsByClassName('upgrade-button')));
-      tmp$_2 = button.getAttribute('upgrade-id');
-      if (tmp$_2 == null) {
-        return;
-      }
-      var id = tmp$_2;
-      tmp$_3 = Master_getInstance().upgrades.get_11rb$(toInt(id));
-      if (tmp$_3 == null) {
-        return;
-      }
-      var upgrade = tmp$_3;
-      if (upgrade.gradesBought >= upgrade.grades || upgrade.calculatePrice() > this.Hero.Xp) {
-        button.setAttribute('disabled', 'disabled');
-      }
-       else {
-        button.removeAttribute('disabled');
-      }
-      if (!upgrade.enabled) {
-        addClass(element, ['d-none']);
-      }
-       else {
-        removeClass(element, ['d-none']);
-      }
-    }
-  };
-  Game.prototype.handleAutoAttack_0 = function () {
-    var tmp$, tmp$_0;
-    var aps = (tmp$_0 = (tmp$ = this.Hero.Attributes.get_11rb$(AttributeType$APS_getInstance())) != null ? tmp$.value : null) != null ? tmp$_0 : 0.0;
-    if (aps <= 0)
-      return;
-    var now = currentTimeMillis().toNumber() / 1000.0;
-    var delta = now - this.lastAutoAttack_0;
-    if (delta >= 1.0 / aps) {
-      this.handleMonsterAttack();
-      this.lastAutoAttack_0 = now;
-    }
-  };
-  Game.prototype.updateUpgradeButton_cmzi4w$ = function (upgrade, upgradeContainer, button) {
-    if (upgrade.grades > 1) {
-      button.innerHTML = upgrade.name + ' ' + (upgrade.gradesBought + 1 | 0);
-      upgrade.updatePriceTag();
-    }
-  };
-  Game.$metadata$ = {
-    kind: Kind_OBJECT,
-    simpleName: 'Game',
-    interfaces: []
-  };
-  var Game_instance = null;
-  function Game_getInstance() {
-    if (Game_instance === null) {
-      new Game();
-    }
-    return Game_instance;
-  }
-  function GameView(name, ordinal) {
-    Enum.call(this);
-    this.name$ = name;
-    this.ordinal$ = ordinal;
-  }
-  function GameView_initFields() {
-    GameView_initFields = function () {
-    };
-    GameView$WORLD_instance = new GameView('WORLD', 0);
-    GameView$MENTOR_instance = new GameView('MENTOR', 1);
-  }
-  var GameView$WORLD_instance;
-  function GameView$WORLD_getInstance() {
-    GameView_initFields();
-    return GameView$WORLD_instance;
-  }
-  var GameView$MENTOR_instance;
-  function GameView$MENTOR_getInstance() {
-    GameView_initFields();
-    return GameView$MENTOR_instance;
-  }
-  GameView.$metadata$ = {
-    kind: Kind_CLASS,
-    simpleName: 'GameView',
-    interfaces: [Enum]
-  };
-  function GameView$values() {
-    return [GameView$WORLD_getInstance(), GameView$MENTOR_getInstance()];
-  }
-  GameView.values = GameView$values;
-  function GameView$valueOf(name) {
-    switch (name) {
-      case 'WORLD':
-        return GameView$WORLD_getInstance();
-      case 'MENTOR':
-        return GameView$MENTOR_getInstance();
-      default:throwISE('No enum constant hsl.core.GameView.' + name);
-    }
-  }
-  GameView.valueOf_61zpoe$ = GameView$valueOf;
-  function Hero() {
-    this.Level_xpggig$_0 = new IdIntBinding(1, 'heroLevel');
-    this.Gold_cm5py0$_0 = new IdIntBinding(0, 'heroGold');
-    this.Xp_ppixjk$_0 = new IdIntBinding(0, 'heroXp');
-    this.Attributes = mutableMapOf([to(AttributeType$DMG_getInstance(), new Attribute(1.0, AttributeType$DMG_getInstance()))]);
-  }
-  var Hero$Level_metadata = new PropertyMetadata('Level');
-  Object.defineProperty(Hero.prototype, 'Level', {
-    get: function () {
-      return this.Level_xpggig$_0.getValue_lrcp0p$(this, Hero$Level_metadata);
-    },
-    set: function (Level) {
-      this.Level_xpggig$_0.setValue_9rddgb$(this, Hero$Level_metadata, Level);
-    }
-  });
-  var Hero$Gold_metadata = new PropertyMetadata('Gold');
-  Object.defineProperty(Hero.prototype, 'Gold', {
-    get: function () {
-      return this.Gold_cm5py0$_0.getValue_lrcp0p$(this, Hero$Gold_metadata);
-    },
-    set: function (Gold) {
-      this.Gold_cm5py0$_0.setValue_9rddgb$(this, Hero$Gold_metadata, Gold);
-    }
-  });
-  var Hero$Xp_metadata = new PropertyMetadata('Xp');
-  Object.defineProperty(Hero.prototype, 'Xp', {
-    get: function () {
-      return this.Xp_ppixjk$_0.getValue_lrcp0p$(this, Hero$Xp_metadata);
-    },
-    set: function (Xp) {
-      this.Xp_ppixjk$_0.setValue_9rddgb$(this, Hero$Xp_metadata, Xp);
-    }
-  });
-  Hero.prototype.attack_lm0ins$ = function (monster) {
-    var tmp$, tmp$_0;
-    var damage = (tmp$_0 = (tmp$ = this.Attributes.get_11rb$(AttributeType$DMG_getInstance())) != null ? tmp$.value : null) != null ? tmp$_0 : 0.0;
-    var died = monster.dealDamage_mx4ult$(damage);
-    if (died) {
-      Game_getInstance().Logger.logMsg_uzephu$(MsgType$COMBAT_getInstance(), 'There has been a tragic and unforeseeable death: ' + monster);
-      this.Gold = this.Gold + monster.getGold() | 0;
-      this.Xp = this.Xp + monster.getXp() | 0;
-    }
-    return died;
-  };
-  Hero.prototype.addAttribute_ub91zl$ = function (baseValue, type) {
-    var attr = new Attribute(baseValue, type);
-    if (this.Attributes.get_11rb$(type) != null) {
-      println('AttributeType ' + type + ' already known.');
-      return;
-    }
-    this.Attributes.put_xwzc9p$(type, attr);
-    Game_getInstance().refreshAttributeTable();
-  };
-  Hero.prototype.addAttributeEffect_l1uk5f$ = function (attributeType, effect) {
-    var tmp$;
-    tmp$ = this.Attributes.get_11rb$(attributeType);
-    if (tmp$ == null) {
-      throw new AttributeNotFoundException(attributeType);
-    }
-    var attr = tmp$;
-    attr.applyAttributeEffect_e7t91x$(effect);
-  };
-  Hero.prototype.recalculateAttributes = function () {
-    println('Recalculating Attributes');
-    var tmp$;
-    tmp$ = this.Attributes.values.iterator();
-    while (tmp$.hasNext()) {
-      var element = tmp$.next();
-      element.recalculateValue();
-    }
-  };
-  Hero.$metadata$ = {
-    kind: Kind_CLASS,
-    simpleName: 'Hero',
-    interfaces: [AttributeEffectSource]
-  };
   function Master() {
     Master_instance = this;
     this.upgrades = mapOf([to(1, new Upgrade(1, 2, 'Automatic Attacks', 'Teaches you to automatically attack.', Master$upgrades$lambda, 2, void 0, void 0, true)), to(2, new Upgrade(2, 10, 'Faster Attacks', 'Increases your attacks per second by 0.1.', Master$upgrades$lambda_0(this), void 0, 100)), to(3, new Upgrade(3, 1, 'Harder Hits', 'Increases your damage by 1.', Master$upgrades$lambda_1(this), void 0, 100, void 0, true))]);
@@ -782,15 +373,15 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
     this.grades = grades;
     this.gradesBought = gradesBought;
     this.enabled = enabled;
-    this._priceTagValue_y7gpvh$_0 = new IdIntBinding(this.basePrice, 'upgrade' + this.id + 'PriceTag');
+    this._priceTagValue_vajflx$_0 = new IdIntBinding(this.basePrice, 'upgrade' + this.id + 'PriceTag');
   }
   var Upgrade$_priceTagValue_metadata = new PropertyMetadata('_priceTagValue');
   Object.defineProperty(Upgrade.prototype, '_priceTagValue_0', {
     get: function () {
-      return this._priceTagValue_y7gpvh$_0.getValue_lrcp0p$(this, Upgrade$_priceTagValue_metadata);
+      return this._priceTagValue_vajflx$_0.getValue_lrcp0p$(this, Upgrade$_priceTagValue_metadata);
     },
     set: function (_priceTagValue) {
-      this._priceTagValue_y7gpvh$_0.setValue_9rddgb$(this, Upgrade$_priceTagValue_metadata, _priceTagValue);
+      this._priceTagValue_vajflx$_0.setValue_9rddgb$(this, Upgrade$_priceTagValue_metadata, _priceTagValue);
     }
   });
   Upgrade.prototype.updatePriceTag = function () {
@@ -852,42 +443,6 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
   };
   Upgrade.prototype.equals = function (other) {
     return this === other || (other !== null && (typeof other === 'object' && (Object.getPrototypeOf(this) === Object.getPrototypeOf(other) && (Kotlin.equals(this.id, other.id) && Kotlin.equals(this.basePrice, other.basePrice) && Kotlin.equals(this.name, other.name) && Kotlin.equals(this.tooltip, other.tooltip) && Kotlin.equals(this.effect, other.effect) && Kotlin.equals(this.enables, other.enables) && Kotlin.equals(this.grades, other.grades) && Kotlin.equals(this.gradesBought, other.gradesBought) && Kotlin.equals(this.enabled, other.enabled)))));
-  };
-  function Monster(name, level) {
-    this.name = name;
-    this.level = level;
-    this.maxHealth = this.level * 10.0;
-    this.currentHealth_glatp7$_0 = new IdFloatBinding(this.level * 10.0, 'monsterHealth');
-  }
-  var Monster$currentHealth_metadata = new PropertyMetadata('currentHealth');
-  Object.defineProperty(Monster.prototype, 'currentHealth', {
-    get: function () {
-      return this.currentHealth_glatp7$_0.getValue_lrcp0p$(this, Monster$currentHealth_metadata);
-    },
-    set: function (currentHealth) {
-      this.currentHealth_glatp7$_0.setValue_9rddgb$(this, Monster$currentHealth_metadata, currentHealth);
-    }
-  });
-  Monster.prototype.dealDamage_mx4ult$ = function (dmg) {
-    this.currentHealth = this.currentHealth - dmg;
-    if (this.currentHealth <= 0) {
-      return true;
-    }
-    return false;
-  };
-  Monster.prototype.getGold = function () {
-    return this.level;
-  };
-  Monster.prototype.getXp = function () {
-    return this.level;
-  };
-  Monster.prototype.toString = function () {
-    return this.name + ' (Level ' + this.level + ')';
-  };
-  Monster.$metadata$ = {
-    kind: Kind_CLASS,
-    simpleName: 'Monster',
-    interfaces: []
   };
   function World() {
     this.locations_0 = mapOf_0(to(1, new Location(1, 'Meadows', 'Lush green fields, ', to(1, 10), 3, true)));
@@ -967,6 +522,487 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
   Location.prototype.equals = function (other) {
     return this === other || (other !== null && (typeof other === 'object' && (Object.getPrototypeOf(this) === Object.getPrototypeOf(other) && (Kotlin.equals(this.id, other.id) && Kotlin.equals(this.name, other.name) && Kotlin.equals(this.description, other.description) && Kotlin.equals(this.level, other.level) && Kotlin.equals(this.dungeons, other.dungeons) && Kotlin.equals(this.known, other.known) && Kotlin.equals(this.dungeonsFound, other.dungeonsFound)))));
   };
+  function Game() {
+    Game_instance = this;
+    this.Hero = new Hero();
+    this.World = new World();
+    this.worldView_0 = new WorldGameView();
+    this.masterView_0 = new MasterGameView();
+    this.currentGameView_0 = this.worldView_0;
+    this.gameViews_0 = listOf([this.worldView_0, this.masterView_0]);
+    this.Logger = new Logger('logContainer');
+    this.firstStart_0 = true;
+    this.dungeonsUnlocked_0 = false;
+    this.masterUnlocked_0 = false;
+    this.fCount = 0;
+    this.fps_0 = 30.0;
+    this.interval_0 = 1000.0 / this.fps_0;
+    this.lastTime_0 = (new Date()).getMilliseconds();
+    this.currentTime_0 = 0;
+    this.deltaTime_0 = 0;
+    this.DEBUG = false;
+    this.refreshAttributeTable();
+    this.initGameTabs_0();
+    this.activateView_0(this.worldView_0);
+    if (this.firstStart_0) {
+      this.worldView_0.firstStart();
+    }
+  }
+  Game.prototype.addXp = function () {
+    var tmp$;
+    tmp$ = this.Hero;
+    tmp$.Xp = tmp$.Xp + 1000 | 0;
+  };
+  function Game$gameLoop$lambda(this$Game) {
+    return function (it) {
+      this$Game.gameLoop();
+      return Unit;
+    };
+  }
+  Game.prototype.gameLoop = function () {
+    window.requestAnimationFrame(Game$gameLoop$lambda(this));
+    this.currentTime_0 = (new Date()).getMilliseconds();
+    this.deltaTime_0 = this.currentTime_0 - this.lastTime_0 | 0;
+    if (this.deltaTime_0 > this.interval_0) {
+      this.fCount = this.fCount + 1 | 0;
+      var $receiver = this.gameViews_0;
+      var destination = ArrayList_init();
+      var tmp$;
+      tmp$ = $receiver.iterator();
+      while (tmp$.hasNext()) {
+        var element = tmp$.next();
+        if (element.isActive)
+          destination.add_11rb$(element);
+      }
+      var tmp$_0;
+      tmp$_0 = destination.iterator();
+      while (tmp$_0.hasNext()) {
+        var element_0 = tmp$_0.next();
+        element_0.update();
+      }
+      this.checkUnlocks_0();
+    }
+  };
+  function Game$initGameTabs$lambda$lambda(closure$view, this$Game) {
+    return function (it) {
+      this$Game.activateView_0(closure$view);
+      return Unit;
+    };
+  }
+  Game.prototype.initGameTabs_0 = function () {
+    var tmp$;
+    tmp$ = this.gameViews_0.iterator();
+    while (tmp$.hasNext()) {
+      var element = tmp$.next();
+      element.init();
+    }
+    var tmp$_0;
+    tmp$_0 = this.gameViews_0.iterator();
+    while (tmp$_0.hasNext()) {
+      var element_0 = tmp$_0.next();
+      var tabButton = document.getElementById(element_0.tabButtonId);
+      tabButton != null ? (tabButton.addEventListener('click', Game$initGameTabs$lambda$lambda(element_0, this)), Unit) : null;
+    }
+  };
+  Game.prototype.activateView_0 = function (gameView) {
+    this.currentGameView_0.onViewExit();
+    this.currentGameView_0.isActive = false;
+    this.currentGameView_0 = gameView;
+    gameView.isActive = true;
+    gameView.onViewEnter();
+  };
+  Game.prototype.checkUnlocks_0 = function () {
+    var tmp$;
+    if (this.Hero.Xp >= 10 && !this.masterUnlocked_0) {
+      (tmp$ = document.getElementById('masterTabContainer')) != null ? removeClass(tmp$, ['d-none']) : null;
+      this.Logger.logMsg_uzephu$(MsgType$EVENT_getInstance(), 'You found a Mindstone... that means you can summon me at any time now... yay...');
+      this.masterUnlocked_0 = true;
+    }
+    if (this.Hero.Level >= 10 && !this.dungeonsUnlocked_0) {
+      this.dungeonsUnlocked_0 = true;
+    }
+  };
+  Game.prototype.refreshAttributeTable = function () {
+    var tmp$;
+    tmp$ = document.getElementById('attributeTableBody');
+    if (tmp$ == null) {
+      throw Exception_init('id: attributeTableBody not found');
+    }
+    var attributeTable = tmp$;
+    clear(attributeTable);
+    var tmp$_0;
+    tmp$_0 = this.Hero.Attributes.values.iterator();
+    while (tmp$_0.hasNext()) {
+      var element = tmp$_0.next();
+      var attrRow = AttributeTableRowGenerator_getInstance().generateAttributeTableRow_led6iu$(element);
+      attributeTable.append(attrRow);
+    }
+    this.Hero.recalculateAttributes();
+  };
+  Game.$metadata$ = {
+    kind: Kind_OBJECT,
+    simpleName: 'Game',
+    interfaces: []
+  };
+  var Game_instance = null;
+  function Game_getInstance() {
+    if (Game_instance === null) {
+      new Game();
+    }
+    return Game_instance;
+  }
+  function AbstractGameView(tabButtonId) {
+    this.tabButtonId = tabButtonId;
+    this.isActive = false;
+  }
+  AbstractGameView.prototype.onViewEnter = function () {
+  };
+  AbstractGameView.prototype.onViewExit = function () {
+  };
+  AbstractGameView.prototype.update = function () {
+  };
+  AbstractGameView.prototype.init = function () {
+  };
+  AbstractGameView.$metadata$ = {
+    kind: Kind_CLASS,
+    simpleName: 'AbstractGameView',
+    interfaces: []
+  };
+  function MasterGameView() {
+    AbstractGameView.call(this, 'master-tab');
+  }
+  MasterGameView.prototype.init = function () {
+    this.initUpgradeButtons_0();
+  };
+  MasterGameView.prototype.onViewEnter = function () {
+    this.updateUpgradeButtons_0();
+  };
+  function MasterGameView$initUpgradeButtons$lambda(closure$id, closure$upgrade, closure$upgradeContainer, closure$button, this$MasterGameView) {
+    return function (it) {
+      var tmp$, tmp$_0;
+      Master_getInstance().buyUpgrade_rsyqya$(Game_getInstance().Hero, closure$id);
+      tmp$_0 = Kotlin.isType(tmp$ = closure$button, HTMLButtonElement) ? tmp$ : throwCCE();
+      this$MasterGameView.updateUpgradeButtonCount_0(closure$upgrade, closure$upgradeContainer, tmp$_0);
+      this$MasterGameView.updateUpgradeButtons_0();
+      return Unit;
+    };
+  }
+  MasterGameView.prototype.initUpgradeButtons_0 = function () {
+    var tmp$, tmp$_0;
+    tmp$ = document.getElementById('upgradeButtonsContainer');
+    if (tmp$ == null) {
+      return;
+    }
+    var container = tmp$;
+    tmp$_0 = Master_getInstance().upgrades.entries.iterator();
+    while (tmp$_0.hasNext()) {
+      var kvp = tmp$_0.next();
+      var id = kvp.key;
+      var upgrade = kvp.value;
+      var upgradeContainer = UpgradeButtonGenerator_getInstance().generateUpgradeButton_x2t2yu$(upgrade);
+      var button = first(asList(upgradeContainer.getElementsByClassName('upgrade-button')));
+      container.append(upgradeContainer);
+      button.addEventListener('click', MasterGameView$initUpgradeButtons$lambda(id, upgrade, upgradeContainer, button, this));
+      upgrade.updatePriceTag();
+    }
+  };
+  MasterGameView.prototype.updateUpgradeButtons_0 = function () {
+    var tmp$, tmp$_0;
+    tmp$ = document.getElementById('master-tab');
+    if (tmp$ == null) {
+      return;
+    }
+    var masterTab = tmp$;
+    if (!hasClass(masterTab, 'active'))
+      return;
+    tmp$_0 = document.getElementById('upgradeButtonsContainer');
+    if (tmp$_0 == null) {
+      return;
+    }
+    var container = tmp$_0;
+    var tmp$_1;
+    tmp$_1 = asList(container.getElementsByClassName('btn-group')).iterator();
+    while (tmp$_1.hasNext()) {
+      var element = tmp$_1.next();
+      var tmp$_2, tmp$_3;
+      var button = first(asList(element.getElementsByClassName('upgrade-button')));
+      tmp$_2 = button.getAttribute('upgrade-id');
+      if (tmp$_2 == null) {
+        return;
+      }
+      var id = tmp$_2;
+      tmp$_3 = Master_getInstance().upgrades.get_11rb$(toInt(id));
+      if (tmp$_3 == null) {
+        return;
+      }
+      var upgrade = tmp$_3;
+      if (upgrade.gradesBought >= upgrade.grades || upgrade.calculatePrice() > Game_getInstance().Hero.Xp) {
+        button.setAttribute('disabled', 'disabled');
+      }
+       else {
+        button.removeAttribute('disabled');
+      }
+      if (!upgrade.enabled) {
+        addClass(element, ['d-none']);
+      }
+       else {
+        removeClass(element, ['d-none']);
+      }
+    }
+  };
+  MasterGameView.prototype.updateUpgradeButtonCount_0 = function (upgrade, upgradeContainer, button) {
+    if (upgrade.grades > 1) {
+      button.innerHTML = upgrade.name + ' ' + (upgrade.gradesBought + 1 | 0);
+      upgrade.updatePriceTag();
+    }
+  };
+  MasterGameView.$metadata$ = {
+    kind: Kind_CLASS,
+    simpleName: 'MasterGameView',
+    interfaces: [AbstractGameView]
+  };
+  function WorldGameView() {
+    AbstractGameView.call(this, 'world-tab');
+    this.CurrentMonster_2grbls$_0 = this.CurrentMonster_2grbls$_0;
+    this.CurrentMonsterCard_11jq9c$_0 = this.CurrentMonsterCard_11jq9c$_0;
+    this.currentLocationId_0 = 1;
+    this.isAtLocation_0 = false;
+    this.monsterIsSpawned_0 = false;
+    this.lastAutoAttack_0 = 0.0;
+  }
+  Object.defineProperty(WorldGameView.prototype, 'CurrentMonster_0', {
+    get: function () {
+      if (this.CurrentMonster_2grbls$_0 == null)
+        return throwUPAE('CurrentMonster');
+      return this.CurrentMonster_2grbls$_0;
+    },
+    set: function (CurrentMonster) {
+      this.CurrentMonster_2grbls$_0 = CurrentMonster;
+    }
+  });
+  Object.defineProperty(WorldGameView.prototype, 'CurrentMonsterCard_0', {
+    get: function () {
+      if (this.CurrentMonsterCard_11jq9c$_0 == null)
+        return throwUPAE('CurrentMonsterCard');
+      return this.CurrentMonsterCard_11jq9c$_0;
+    },
+    set: function (CurrentMonsterCard) {
+      this.CurrentMonsterCard_11jq9c$_0 = CurrentMonsterCard;
+    }
+  });
+  WorldGameView.prototype.init = function () {
+    this.initLocationList_0();
+  };
+  WorldGameView.prototype.update = function () {
+    if (!this.monsterIsSpawned_0 && this.isAtLocation_0) {
+      this.spawnMonster_0();
+    }
+    if (this.monsterIsSpawned_0 && this.isAtLocation_0) {
+      this.handleAutoAttack_0();
+    }
+  };
+  WorldGameView.prototype.firstStart = function () {
+    this.goToLocation_za3lpa$(1);
+  };
+  WorldGameView.prototype.handleAutoAttack_0 = function () {
+    var tmp$, tmp$_0;
+    var aps = (tmp$_0 = (tmp$ = Game_getInstance().Hero.Attributes.get_11rb$(AttributeType$APS_getInstance())) != null ? tmp$.value : null) != null ? tmp$_0 : 0.0;
+    if (aps <= 0)
+      return;
+    var now = currentTimeMillis().toNumber() / 1000.0;
+    var delta = now - this.lastAutoAttack_0;
+    if (delta >= 1.0 / aps) {
+      this.handleMonsterAttack_0();
+      this.lastAutoAttack_0 = now;
+    }
+  };
+  WorldGameView.prototype.initLocationList_0 = function () {
+    var tmp$;
+    tmp$ = document.getElementById('locationList');
+    if (tmp$ == null) {
+      throw new IdNotFoundException('locationList');
+    }
+    var locationList = tmp$;
+    var tmp$_0;
+    tmp$_0 = Game_getInstance().World.getLocations().iterator();
+    while (tmp$_0.hasNext()) {
+      var element = tmp$_0.next();
+      locationList.append(LocationListElementGenerator_getInstance().generateElement_3nzq26$(element, this));
+    }
+  };
+  WorldGameView.prototype.goToLocation_za3lpa$ = function (locationId) {
+    var tmp$;
+    (tmp$ = document.getElementById('locationSelectionContainer')) != null ? addClass(tmp$, ['d-none']) : null;
+    var locationContainer = document.getElementById('locationContainer');
+    var locationElement = LocationElementGenerator_getInstance().generateElement_t2r4u8$(Game_getInstance().World.getLocationById_za3lpa$(locationId), getCallableRef('leaveCurrentLocation', function ($receiver) {
+      return $receiver.leaveCurrentLocation_0(), Unit;
+    }.bind(null, this)));
+    locationContainer != null ? removeClass(locationContainer, ['d-none']) : null;
+    locationContainer != null ? (locationContainer.append(locationElement), Unit) : null;
+    this.isAtLocation_0 = true;
+  };
+  WorldGameView.prototype.leaveCurrentLocation_0 = function () {
+    var tmp$;
+    (tmp$ = document.getElementById('locationSelectionContainer')) != null ? removeClass(tmp$, ['d-none']) : null;
+    var locationContainer = document.getElementById('locationContainer');
+    locationContainer != null ? addClass(locationContainer, ['d-none']) : null;
+    locationContainer != null ? (clear(locationContainer), Unit) : null;
+    this.despawnMonster_0();
+    this.currentLocationId_0 = 0;
+    this.isAtLocation_0 = false;
+  };
+  WorldGameView.prototype.spawnMonster_0 = function () {
+    this.CurrentMonster_0 = MonsterGenerator_getInstance().generateMonster_za3lpa$(1);
+    this.CurrentMonsterCard_0 = this.createMonsterCard_0(this.CurrentMonster_0);
+    this.monsterIsSpawned_0 = true;
+  };
+  WorldGameView.prototype.createMonsterCard_0 = function (monster) {
+    var cardDiv = MonsterCardGenerator_getInstance().generateMonsterCard_a8hvx7$(monster, getCallableRef('handleMonsterAttack', function ($receiver) {
+      return $receiver.handleMonsterAttack_0(), Unit;
+    }.bind(null, this)));
+    var monsterCardContainer = document.getElementById('monsterCardContainer');
+    monsterCardContainer != null ? (monsterCardContainer.append(cardDiv), Unit) : null;
+    first(asList(cardDiv.getElementsByTagName('Button'))).focus();
+    return cardDiv;
+  };
+  WorldGameView.prototype.handleMonsterAttack_0 = function () {
+    var died = Game_getInstance().Hero.attack_lm0ins$(this.CurrentMonster_0);
+    this.updateMonsterHealthBar_0(this.CurrentMonster_0);
+    if (died) {
+      this.destroyMonsterCard_0();
+      this.monsterIsSpawned_0 = false;
+    }
+  };
+  WorldGameView.prototype.updateMonsterHealthBar_0 = function (monster) {
+    var tmp$;
+    var bar = Kotlin.isType(tmp$ = document.getElementById('monsterHealthBar'), HTMLDivElement) ? tmp$ : throwCCE();
+    var hpPercent = monster.currentHealth / monster.maxHealth * 100;
+    var str = hpPercent.toString() + '%';
+    bar.style.width = str;
+  };
+  WorldGameView.prototype.destroyMonsterCard_0 = function () {
+    var tmp$;
+    (tmp$ = this.CurrentMonsterCard_0.parentNode) != null ? (clear(tmp$), Unit) : null;
+  };
+  WorldGameView.prototype.despawnMonster_0 = function () {
+    this.destroyMonsterCard_0();
+    this.monsterIsSpawned_0 = false;
+  };
+  WorldGameView.$metadata$ = {
+    kind: Kind_CLASS,
+    simpleName: 'WorldGameView',
+    interfaces: [AbstractGameView]
+  };
+  function Hero() {
+    this.Level_xpggig$_0 = new IdIntBinding(1, 'heroLevel');
+    this.Gold_cm5py0$_0 = new IdIntBinding(0, 'heroGold');
+    this.Xp_ppixjk$_0 = new IdIntBinding(0, 'heroXp');
+    this.Attributes = mutableMapOf([to(AttributeType$DMG_getInstance(), new Attribute(1.0, AttributeType$DMG_getInstance()))]);
+  }
+  var Hero$Level_metadata = new PropertyMetadata('Level');
+  Object.defineProperty(Hero.prototype, 'Level', {
+    get: function () {
+      return this.Level_xpggig$_0.getValue_lrcp0p$(this, Hero$Level_metadata);
+    },
+    set: function (Level) {
+      this.Level_xpggig$_0.setValue_9rddgb$(this, Hero$Level_metadata, Level);
+    }
+  });
+  var Hero$Gold_metadata = new PropertyMetadata('Gold');
+  Object.defineProperty(Hero.prototype, 'Gold', {
+    get: function () {
+      return this.Gold_cm5py0$_0.getValue_lrcp0p$(this, Hero$Gold_metadata);
+    },
+    set: function (Gold) {
+      this.Gold_cm5py0$_0.setValue_9rddgb$(this, Hero$Gold_metadata, Gold);
+    }
+  });
+  var Hero$Xp_metadata = new PropertyMetadata('Xp');
+  Object.defineProperty(Hero.prototype, 'Xp', {
+    get: function () {
+      return this.Xp_ppixjk$_0.getValue_lrcp0p$(this, Hero$Xp_metadata);
+    },
+    set: function (Xp) {
+      this.Xp_ppixjk$_0.setValue_9rddgb$(this, Hero$Xp_metadata, Xp);
+    }
+  });
+  Hero.prototype.attack_lm0ins$ = function (monster) {
+    var tmp$, tmp$_0;
+    var damage = (tmp$_0 = (tmp$ = this.Attributes.get_11rb$(AttributeType$DMG_getInstance())) != null ? tmp$.value : null) != null ? tmp$_0 : 0.0;
+    var died = monster.dealDamage_mx4ult$(damage);
+    if (died) {
+      Game_getInstance().Logger.logMsg_uzephu$(MsgType$COMBAT_getInstance(), 'There has been a tragic and unforeseeable death: ' + monster);
+      this.Gold = this.Gold + monster.getGold() | 0;
+      this.Xp = this.Xp + monster.getXp() | 0;
+    }
+    return died;
+  };
+  Hero.prototype.addAttribute_ub91zl$ = function (baseValue, type) {
+    var attr = new Attribute(baseValue, type);
+    if (this.Attributes.get_11rb$(type) != null) {
+      return;
+    }
+    this.Attributes.put_xwzc9p$(type, attr);
+    Game_getInstance().refreshAttributeTable();
+  };
+  Hero.prototype.addAttributeEffect_l1uk5f$ = function (attributeType, effect) {
+    var tmp$;
+    tmp$ = this.Attributes.get_11rb$(attributeType);
+    if (tmp$ == null) {
+      throw new AttributeNotFoundException(attributeType);
+    }
+    var attr = tmp$;
+    attr.applyAttributeEffect_e7t91x$(effect);
+  };
+  Hero.prototype.recalculateAttributes = function () {
+    var tmp$;
+    tmp$ = this.Attributes.values.iterator();
+    while (tmp$.hasNext()) {
+      var element = tmp$.next();
+      element.recalculateValue();
+    }
+  };
+  Hero.$metadata$ = {
+    kind: Kind_CLASS,
+    simpleName: 'Hero',
+    interfaces: [AttributeEffectSource]
+  };
+  function Monster(name, level) {
+    this.name = name;
+    this.level = level;
+    this.maxHealth = this.level * 10.0;
+    this.currentHealth_glatp7$_0 = new IdFloatBinding(this.level * 10.0, 'monsterHealth');
+  }
+  var Monster$currentHealth_metadata = new PropertyMetadata('currentHealth');
+  Object.defineProperty(Monster.prototype, 'currentHealth', {
+    get: function () {
+      return this.currentHealth_glatp7$_0.getValue_lrcp0p$(this, Monster$currentHealth_metadata);
+    },
+    set: function (currentHealth) {
+      this.currentHealth_glatp7$_0.setValue_9rddgb$(this, Monster$currentHealth_metadata, currentHealth);
+    }
+  });
+  Monster.prototype.dealDamage_mx4ult$ = function (dmg) {
+    this.currentHealth = this.currentHealth - dmg;
+    if (this.currentHealth <= 0) {
+      return true;
+    }
+    return false;
+  };
+  Monster.prototype.getGold = function () {
+    return this.level;
+  };
+  Monster.prototype.getXp = function () {
+    return this.level;
+  };
+  Monster.prototype.toString = function () {
+    return this.name + ' (Level ' + this.level + ')';
+  };
+  Monster.$metadata$ = {
+    kind: Kind_CLASS,
+    simpleName: 'Monster',
+    interfaces: []
+  };
   function AttributeTableRowGenerator() {
     AttributeTableRowGenerator_instance = this;
   }
@@ -1019,36 +1055,42 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
     set_id($receiver, 'monsterCardContainer');
     return Unit;
   }
-  function LocationElementGenerator$generateElement$lambda$lambda$lambda$lambda$lambda(it) {
-    Game_getInstance().leaveCurrentLocation();
-    return Unit;
+  function LocationElementGenerator$generateElement$lambda$lambda$lambda$lambda$lambda(closure$leaveLocationCallback) {
+    return function (it) {
+      closure$leaveLocationCallback();
+      return Unit;
+    };
   }
-  function LocationElementGenerator$generateElement$lambda$lambda$lambda$lambda($receiver) {
-    $receiver.type = ButtonType.button;
-    $receiver.unaryPlus_pdl1vz$('Leave location');
-    set_onClickFunction($receiver, LocationElementGenerator$generateElement$lambda$lambda$lambda$lambda$lambda);
-    return Unit;
+  function LocationElementGenerator$generateElement$lambda$lambda$lambda$lambda(closure$leaveLocationCallback) {
+    return function ($receiver) {
+      $receiver.type = ButtonType.button;
+      $receiver.unaryPlus_pdl1vz$('Leave location');
+      set_onClickFunction($receiver, LocationElementGenerator$generateElement$lambda$lambda$lambda$lambda$lambda(closure$leaveLocationCallback));
+      return Unit;
+    };
   }
-  function LocationElementGenerator$generateElement$lambda$lambda$lambda_1($receiver) {
-    button($receiver, void 0, void 0, void 0, void 0, 'btn btn-primary', LocationElementGenerator$generateElement$lambda$lambda$lambda$lambda);
-    return Unit;
+  function LocationElementGenerator$generateElement$lambda$lambda$lambda_1(closure$leaveLocationCallback) {
+    return function ($receiver) {
+      button($receiver, void 0, void 0, void 0, void 0, 'btn btn-primary', LocationElementGenerator$generateElement$lambda$lambda$lambda$lambda(closure$leaveLocationCallback));
+      return Unit;
+    };
   }
-  function LocationElementGenerator$generateElement$lambda$lambda(closure$location) {
+  function LocationElementGenerator$generateElement$lambda$lambda(closure$location, closure$leaveLocationCallback) {
     return function ($receiver) {
       div($receiver, 'col-sm', LocationElementGenerator$generateElement$lambda$lambda$lambda(closure$location));
       div($receiver, 'col-sm', LocationElementGenerator$generateElement$lambda$lambda$lambda_0);
-      div($receiver, 'col-sm', LocationElementGenerator$generateElement$lambda$lambda$lambda_1);
+      div($receiver, 'col-sm', LocationElementGenerator$generateElement$lambda$lambda$lambda_1(closure$leaveLocationCallback));
       return Unit;
     };
   }
-  function LocationElementGenerator$generateElement$lambda(closure$location) {
+  function LocationElementGenerator$generateElement$lambda(closure$location, closure$leaveLocationCallback) {
     return function ($receiver) {
-      div($receiver, 'row', LocationElementGenerator$generateElement$lambda$lambda(closure$location));
+      div($receiver, 'row', LocationElementGenerator$generateElement$lambda$lambda(closure$location, closure$leaveLocationCallback));
       return Unit;
     };
   }
-  LocationElementGenerator.prototype.generateElement_yw5djh$ = function (location) {
-    var element = div_0(get_create(document), void 0, LocationElementGenerator$generateElement$lambda(location));
+  LocationElementGenerator.prototype.generateElement_t2r4u8$ = function (location, leaveLocationCallback) {
+    var element = div_0(get_create(document), void 0, LocationElementGenerator$generateElement$lambda(location, leaveLocationCallback));
     return element;
   };
   LocationElementGenerator.$metadata$ = {
@@ -1084,37 +1126,37 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
       return Unit;
     };
   }
-  function LocationListElementGenerator$generateElement$lambda$lambda$lambda$lambda(closure$location) {
+  function LocationListElementGenerator$generateElement$lambda$lambda$lambda$lambda(closure$view, closure$location) {
     return function (it) {
-      Game_getInstance().goToLocation_za3lpa$(closure$location.id);
+      closure$view.goToLocation_za3lpa$(closure$location.id);
       return Unit;
     };
   }
-  function LocationListElementGenerator$generateElement$lambda$lambda$lambda(closure$location) {
+  function LocationListElementGenerator$generateElement$lambda$lambda$lambda(closure$view, closure$location) {
     return function ($receiver) {
       $receiver.unaryPlus_pdl1vz$('Explore');
       $receiver.type = ButtonType.button;
-      set_onClickFunction($receiver, LocationListElementGenerator$generateElement$lambda$lambda$lambda$lambda(closure$location));
+      set_onClickFunction($receiver, LocationListElementGenerator$generateElement$lambda$lambda$lambda$lambda(closure$view, closure$location));
       return Unit;
     };
   }
-  function LocationListElementGenerator$generateElement$lambda$lambda_2(closure$location) {
+  function LocationListElementGenerator$generateElement$lambda$lambda_2(closure$view, closure$location) {
     return function ($receiver) {
-      button($receiver, void 0, void 0, void 0, void 0, 'btn btn-primary', LocationListElementGenerator$generateElement$lambda$lambda$lambda(closure$location));
+      button($receiver, void 0, void 0, void 0, void 0, 'btn btn-primary', LocationListElementGenerator$generateElement$lambda$lambda$lambda(closure$view, closure$location));
       return Unit;
     };
   }
-  function LocationListElementGenerator$generateElement$lambda(closure$location) {
+  function LocationListElementGenerator$generateElement$lambda(closure$location, closure$view) {
     return function ($receiver) {
       td($receiver, void 0, LocationListElementGenerator$generateElement$lambda$lambda(closure$location));
       td($receiver, void 0, LocationListElementGenerator$generateElement$lambda$lambda_0(closure$location));
       td($receiver, void 0, LocationListElementGenerator$generateElement$lambda$lambda_1(closure$location));
-      td($receiver, void 0, LocationListElementGenerator$generateElement$lambda$lambda_2(closure$location));
+      td($receiver, void 0, LocationListElementGenerator$generateElement$lambda$lambda_2(closure$view, closure$location));
       return Unit;
     };
   }
-  LocationListElementGenerator.prototype.generateElement_yw5djh$ = function (location) {
-    return tr_0(get_create(document), void 0, LocationListElementGenerator$generateElement$lambda(location));
+  LocationListElementGenerator.prototype.generateElement_3nzq26$ = function (location, view) {
+    return tr_0(get_create(document), void 0, LocationListElementGenerator$generateElement$lambda(location, view));
   };
   LocationListElementGenerator.$metadata$ = {
     kind: Kind_OBJECT,
@@ -1157,35 +1199,39 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
     div($receiver, 'progress', MonsterCardGenerator$generateMonsterCard$lambda$lambda$lambda$lambda);
     return Unit;
   }
-  function MonsterCardGenerator$generateMonsterCard$lambda$lambda$lambda$lambda_0(it) {
-    Game_getInstance().handleMonsterAttack();
-    return Unit;
+  function MonsterCardGenerator$generateMonsterCard$lambda$lambda$lambda$lambda_0(closure$monsterAttackCallback) {
+    return function (it) {
+      closure$monsterAttackCallback();
+      return Unit;
+    };
   }
-  function MonsterCardGenerator$generateMonsterCard$lambda$lambda$lambda_1($receiver) {
-    $receiver.type = ButtonType.button;
-    set_id($receiver, 'monsterAttackButton');
-    set_onClickFunction($receiver, MonsterCardGenerator$generateMonsterCard$lambda$lambda$lambda$lambda_0);
-    $receiver.unaryPlus_pdl1vz$('Attack');
-    return Unit;
+  function MonsterCardGenerator$generateMonsterCard$lambda$lambda$lambda_1(closure$monsterAttackCallback) {
+    return function ($receiver) {
+      $receiver.type = ButtonType.button;
+      set_id($receiver, 'monsterAttackButton');
+      set_onClickFunction($receiver, MonsterCardGenerator$generateMonsterCard$lambda$lambda$lambda$lambda_0(closure$monsterAttackCallback));
+      $receiver.unaryPlus_pdl1vz$('Attack');
+      return Unit;
+    };
   }
-  function MonsterCardGenerator$generateMonsterCard$lambda$lambda_0(closure$monster) {
+  function MonsterCardGenerator$generateMonsterCard$lambda$lambda_0(closure$monster, closure$monsterAttackCallback) {
     return function ($receiver) {
       h5($receiver, 'card-title', MonsterCardGenerator$generateMonsterCard$lambda$lambda$lambda(closure$monster));
       p($receiver, 'card-text', MonsterCardGenerator$generateMonsterCard$lambda$lambda$lambda_0);
-      button($receiver, void 0, void 0, void 0, void 0, 'btn btn-danger', MonsterCardGenerator$generateMonsterCard$lambda$lambda$lambda_1);
+      button($receiver, void 0, void 0, void 0, void 0, 'btn btn-danger', MonsterCardGenerator$generateMonsterCard$lambda$lambda$lambda_1(closure$monsterAttackCallback));
       return Unit;
     };
   }
-  function MonsterCardGenerator$generateMonsterCard$lambda(closure$monster) {
+  function MonsterCardGenerator$generateMonsterCard$lambda(closure$monster, closure$monsterAttackCallback) {
     return function ($receiver) {
       set_style($receiver, 'max-width: 20em');
       img($receiver, void 0, void 0, 'card-img-top img-fluid', MonsterCardGenerator$generateMonsterCard$lambda$lambda);
-      div($receiver, 'card-body', MonsterCardGenerator$generateMonsterCard$lambda$lambda_0(closure$monster));
+      div($receiver, 'card-body', MonsterCardGenerator$generateMonsterCard$lambda$lambda_0(closure$monster, closure$monsterAttackCallback));
       return Unit;
     };
   }
-  MonsterCardGenerator.prototype.generateMonsterCard_lm0ins$ = function (monster) {
-    var card = div_1(get_create(document), 'card mx-auto', MonsterCardGenerator$generateMonsterCard$lambda(monster));
+  MonsterCardGenerator.prototype.generateMonsterCard_a8hvx7$ = function (monster, monsterAttackCallback) {
+    var card = div_1(get_create(document), 'card mx-auto', MonsterCardGenerator$generateMonsterCard$lambda(monster, monsterAttackCallback));
     return card;
   };
   MonsterCardGenerator.$metadata$ = {
@@ -1265,7 +1311,7 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
       return Unit;
     };
   }
-  UpgradeButtonGenerator.prototype.generateUpgradeButton_ejzugi$ = function (upgrade) {
+  UpgradeButtonGenerator.prototype.generateUpgradeButton_x2t2yu$ = function (upgrade) {
     var button = div_0(get_create(document), void 0, UpgradeButtonGenerator$generateUpgradeButton$lambda(upgrade));
     return button;
   };
@@ -1507,26 +1553,23 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
     get: AttributeType$APS_getInstance
   });
   package$core.AttributeType = AttributeType;
-  Object.defineProperty(package$core, 'Game', {
-    get: Game_getInstance
-  });
-  Object.defineProperty(GameView, 'WORLD', {
-    get: GameView$WORLD_getInstance
-  });
-  Object.defineProperty(GameView, 'MENTOR', {
-    get: GameView$MENTOR_getInstance
-  });
-  package$core.GameView = GameView;
-  package$core.Hero = Hero;
-  var package$master = package$core.master || (package$core.master = {});
-  Object.defineProperty(package$master, 'Master', {
+  var package$data = package$core.data || (package$core.data = {});
+  Object.defineProperty(package$data, 'Master', {
     get: Master_getInstance
   });
-  package$master.Upgrade = Upgrade;
-  package$core.Monster = Monster;
+  package$data.Upgrade = Upgrade;
   var package$world = package$core.world || (package$core.world = {});
   package$world.World = World;
   package$world.Location = Location;
+  Object.defineProperty(package$core, 'Game', {
+    get: Game_getInstance
+  });
+  package$core.AbstractGameView = AbstractGameView;
+  var package$gameviews = package$core.gameviews || (package$core.gameviews = {});
+  package$gameviews.MasterGameView = MasterGameView;
+  package$gameviews.WorldGameView = WorldGameView;
+  package$core.Hero = Hero;
+  package$core.Monster = Monster;
   var package$generators = package$hsl.generators || (package$hsl.generators = {});
   var package$html = package$generators.html || (package$generators.html = {});
   Object.defineProperty(package$html, 'AttributeTableRowGenerator', {

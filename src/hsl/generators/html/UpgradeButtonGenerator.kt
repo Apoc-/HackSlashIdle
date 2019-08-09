@@ -1,6 +1,6 @@
 package hsl.generators.html
 
-import hsl.core.master.Upgrade
+import hsl.core.data.Upgrade
 import kotlinx.html.dom.create
 import kotlinx.html.*
 import org.w3c.dom.HTMLElement

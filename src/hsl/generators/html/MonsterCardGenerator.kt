@@ -8,9 +8,10 @@ import kotlinx.html.js.div
 import kotlinx.html.js.onClickFunction
 import org.w3c.dom.HTMLDivElement
 import kotlin.browser.document
+import kotlin.reflect.KFunction0
 
 object MonsterCardGenerator {
-    fun generateMonsterCard(monster: Monster): HTMLDivElement {
+    fun generateMonsterCard(monster: Monster, monsterAttackCallback: () -> Unit): HTMLDivElement {
         val card = document.create.div(classes = "card mx-auto") {
             style = "max-width: 20em"
 
@@ -41,7 +42,7 @@ object MonsterCardGenerator {
                     id = "monsterAttackButton"
 
                     onClickFunction = {
-                        Game.handleMonsterAttack()
+                        monsterAttackCallback()
                     }
 
                     + "Attack"

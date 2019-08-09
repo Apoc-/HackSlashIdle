@@ -10,7 +10,7 @@ import org.w3c.dom.HTMLElement
 import kotlin.browser.document
 
 object LocationElementGenerator {
-    fun generateElement(location: Location): HTMLElement {
+    fun generateElement(location: Location, leaveLocationCallback: () -> Unit): HTMLElement {
         var element = document.create.div {
             div(classes = "row") {
                 div(classes = "col-sm") {
@@ -28,7 +28,7 @@ object LocationElementGenerator {
                         + "Leave location"
 
                         onClickFunction = {
-                            Game.leaveCurrentLocation()
+                            leaveLocationCallback()
                         }
                     }
                 }
