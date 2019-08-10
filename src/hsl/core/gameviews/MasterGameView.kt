@@ -22,6 +22,10 @@ class MasterGameView : AbstractGameView("master-tab") {
         updateUpgradeButtons()
     }
 
+    override fun update() {
+        updateUpgradeButtons()
+    }
+
     private fun initUpgradeButtons() {
         val container = document.getElementById("upgradeButtonsContainer") ?: return
 
@@ -43,10 +47,6 @@ class MasterGameView : AbstractGameView("master-tab") {
     }
 
     private fun updateUpgradeButtons() {
-        val masterTab = document.getElementById("master-tab") ?: return
-
-        if(!masterTab.hasClass("active")) return
-
         val container = document.getElementById("upgradeButtonsContainer") ?: return
 
         container.getElementsByClassName("btn-group").asList().forEach {
