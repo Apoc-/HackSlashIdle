@@ -25,12 +25,12 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
   var Exception_init = Kotlin.kotlin.Exception_init_pdl1vj$;
   var clear = Kotlin.kotlin.dom.clear_asww5s$;
   var listOf = Kotlin.kotlin.collections.listOf_i5x0yv$;
+  var addClass = Kotlin.kotlin.dom.addClass_hhb33f$;
+  var numberToInt = Kotlin.numberToInt;
   var asList = Kotlin.org.w3c.dom.asList_kt9thq$;
   var first = Kotlin.kotlin.collections.first_2p1efm$;
   var throwCCE = Kotlin.throwCCE;
-  var hasClass = Kotlin.kotlin.dom.hasClass_46n0ku$;
   var toInt = Kotlin.kotlin.text.toInt_pdl1vz$;
-  var addClass = Kotlin.kotlin.dom.addClass_hhb33f$;
   var throwUPAE = Kotlin.throwUPAE;
   var currentTimeMillis = $module$kotlinx_html_js.kotlinx.html.currentTimeMillis;
   var getCallableRef = Kotlin.getCallableRef;
@@ -57,7 +57,6 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
   var IntRange = Kotlin.kotlin.ranges.IntRange;
   var Exception = Kotlin.kotlin.Exception;
   var Random = Kotlin.kotlin.random.Random;
-  var numberToInt = Kotlin.numberToInt;
   var ReadWriteProperty = Kotlin.kotlin.properties.ReadWriteProperty;
   var b = $module$kotlinx_html_js.kotlinx.html.b_r0mnq7$;
   AttributeEffectType.prototype = Object.create(Enum.prototype);
@@ -77,7 +76,7 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
   MsgType.prototype = Object.create(Enum.prototype);
   MsgType.prototype.constructor = MsgType;
   function main(args) {
-    println('Starting gameLoop...');
+    println('Starting gameLoop...1');
     Game_getInstance().gameLoop();
   }
   function Attribute(baseValue, type) {
@@ -670,11 +669,44 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
   };
   function MasterGameView() {
     AbstractGameView.call(this, 'master-tab');
+    var tmp$, tmp$_0;
+    tmp$ = document.getElementById('upgradeButtonsContainer');
+    if (tmp$ == null) {
+      throw new IdNotFoundException('upgradeButtonsContainer');
+    }
+    this.upgradeButtonsContainer_0 = tmp$;
+    tmp$_0 = document.getElementById('summonMentorContainer');
+    if (tmp$_0 == null) {
+      throw new IdNotFoundException('summonMentorContainer');
+    }
+    this.summonMentorContainer_0 = tmp$_0;
+  }
+  function MasterGameView$init$lambda(this$MasterGameView) {
+    return function (it) {
+      var tmp$;
+      tmp$ = Game_getInstance().Hero;
+      var tmp$_0 = tmp$.Xp;
+      var x = Game_getInstance().Hero.Xp * 0.1;
+      tmp$.Xp = tmp$_0 - numberToInt(Math_0.ceil(x)) | 0;
+      removeClass(this$MasterGameView.upgradeButtonsContainer_0, ['d-none']);
+      addClass(this$MasterGameView.summonMentorContainer_0, ['d-none']);
+      return Unit;
+    };
   }
   MasterGameView.prototype.init = function () {
+    var tmp$;
     this.initUpgradeButtons_0();
+    addClass(this.upgradeButtonsContainer_0, ['d-none']);
+    (tmp$ = document.getElementById('summonMasterButton')) != null ? (tmp$.addEventListener('click', MasterGameView$init$lambda(this)), Unit) : null;
   };
   MasterGameView.prototype.onViewEnter = function () {
+    this.updateUpgradeButtons_0();
+    removeClass(this.summonMentorContainer_0, ['d-none']);
+  };
+  MasterGameView.prototype.onViewExit = function () {
+    addClass(this.upgradeButtonsContainer_0, ['d-none']);
+  };
+  MasterGameView.prototype.update = function () {
     this.updateUpgradeButtons_0();
   };
   function MasterGameView$initUpgradeButtons$lambda(closure$id, closure$upgrade, closure$upgradeContainer, closure$button, this$MasterGameView) {
@@ -707,35 +739,28 @@ var HackSlashIdle = function (_, Kotlin, $module$kotlinx_html_js) {
     }
   };
   MasterGameView.prototype.updateUpgradeButtons_0 = function () {
-    var tmp$, tmp$_0;
-    tmp$ = document.getElementById('master-tab');
+    var tmp$;
+    tmp$ = document.getElementById('upgradeButtonsContainer');
     if (tmp$ == null) {
       return;
     }
-    var masterTab = tmp$;
-    if (!hasClass(masterTab, 'active'))
-      return;
-    tmp$_0 = document.getElementById('upgradeButtonsContainer');
-    if (tmp$_0 == null) {
-      return;
-    }
-    var container = tmp$_0;
-    var tmp$_1;
-    tmp$_1 = asList(container.getElementsByClassName('btn-group')).iterator();
-    while (tmp$_1.hasNext()) {
-      var element = tmp$_1.next();
-      var tmp$_2, tmp$_3;
+    var container = tmp$;
+    var tmp$_0;
+    tmp$_0 = asList(container.getElementsByClassName('btn-group')).iterator();
+    while (tmp$_0.hasNext()) {
+      var element = tmp$_0.next();
+      var tmp$_1, tmp$_2;
       var button = first(asList(element.getElementsByClassName('upgrade-button')));
-      tmp$_2 = button.getAttribute('upgrade-id');
+      tmp$_1 = button.getAttribute('upgrade-id');
+      if (tmp$_1 == null) {
+        return;
+      }
+      var id = tmp$_1;
+      tmp$_2 = Master_getInstance().upgrades.get_11rb$(toInt(id));
       if (tmp$_2 == null) {
         return;
       }
-      var id = tmp$_2;
-      tmp$_3 = Master_getInstance().upgrades.get_11rb$(toInt(id));
-      if (tmp$_3 == null) {
-        return;
-      }
-      var upgrade = tmp$_3;
+      var upgrade = tmp$_2;
       if (upgrade.gradesBought >= upgrade.grades || upgrade.calculatePrice() > Game_getInstance().Hero.Xp) {
         button.setAttribute('disabled', 'disabled');
       }

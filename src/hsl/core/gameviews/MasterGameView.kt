@@ -5,6 +5,8 @@ import hsl.core.Game
 import hsl.core.data.Master
 import hsl.core.data.Upgrade
 import hsl.generators.html.UpgradeButtonGenerator
+import hsl.util.IdNotFoundException
+import org.w3c.dom.Element
 import org.w3c.dom.HTMLButtonElement
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.asList
@@ -12,14 +14,33 @@ import kotlin.browser.document
 import kotlin.dom.addClass
 import kotlin.dom.hasClass
 import kotlin.dom.removeClass
+import kotlin.js.Math
+import kotlin.math.ceil
 
 class MasterGameView : AbstractGameView("master-tab") {
+    private var upgradeButtonsContainer: Element = document.getElementById("upgradeButtonsContainer") ?: throw IdNotFoundException("upgradeButtonsContainer")
+    private var summonMentorContainer: Element = document.getElementById("summonMentorContainer") ?: throw IdNotFoundException("summonMentorContainer")
+
     override fun init() {
         initUpgradeButtons()
+
+        upgradeButtonsContainer.addClass("d-none")
+
+        document.getElementById("summonMasterButton")?.addEventListener("click", {
+            Game.Hero.Xp -= ceil(Game.Hero.Xp * 0.1f).toInt()
+
+            upgradeButtonsContainer.removeClass("d-none")
+            summonMentorContainer.addClass("d-none")
+        })
     }
 
     override fun onViewEnter() {
         updateUpgradeButtons()
+        summonMentorContainer.removeClass("d-none")
+    }
+
+    override fun onViewExit() {
+        upgradeButtonsContainer.addClass("d-none")
     }
 
     override fun update() {
@@ -50,9 +71,9 @@ class MasterGameView : AbstractGameView("master-tab") {
         val container = document.getElementById("upgradeButtonsContainer") ?: return
 
         container.getElementsByClassName("btn-group").asList().forEach {
-            var button = it.getElementsByClassName("upgrade-button").asList().first()
-            var id = button.getAttribute("upgrade-id") ?: return
-            var upgrade = Master.upgrades[id.toInt()] ?: return
+            val button = it.getElementsByClassName("upgrade-button").asList().first()
+            val id = button.getAttribute("upgrade-id") ?: return
+            val upgrade = Master.upgrades[id.toInt()] ?: return
 
             if(upgrade.gradesBought >= upgrade.grades || upgrade.calculatePrice() > Game.Hero.Xp) {
                 button.setAttribute("disabled", "disabled")
@@ -67,7 +88,6 @@ class MasterGameView : AbstractGameView("master-tab") {
             }
         }
     }
-
 
     private fun updateUpgradeButtonCount(upgrade: Upgrade, upgradeContainer: HTMLElement, button: HTMLButtonElement) {
         if(upgrade.grades > 1) {
